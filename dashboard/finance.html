@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>داشبورد مالی — بهوش</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23111'/%3E%3Ctext x='16' y='22' font-size='17' font-family='sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3E%D8%A8%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#ffffff; --soft:#fafafa; --card:#f5f5f5; --strong:#e8e8e8;
+  --ink:#111111; --body:#3f3f46; --muted:#71717a; --hair:#e4e4e7;
+  --ok:#16a34a; --ok-soft:#dcfce7; --warn:#d97706; --warn-soft:#fef3c7;
+  --bad:#dc2626; --bad-soft:#fee2e2; --blue:#2563eb; --violet:#7c3aed;
+  --r:14px; --r-sm:10px;
+  --sh:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.03);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Vazirmatn,system-ui,sans-serif;background:var(--canvas);color:var(--ink);
+  padding:18px 14px 40px;max-width:960px;margin:0 auto;line-height:1.85;
+  -webkit-font-smoothing:antialiased;
+}
+header{margin-bottom:18px}
+h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.hsub{color:var(--muted);font-size:12.5px;margin-top:2px}
+.topbar{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.tbtn{font-family:inherit;font-size:12px;padding:6px 14px;border-radius:999px;
+  border:1px solid var(--hair);background:#fff;color:var(--body);cursor:pointer;text-decoration:none}
+.tbtn:hover{background:var(--card)}
+.nav{display:flex;gap:6px;overflow-x:auto;padding:6px;background:var(--card);
+  border-radius:999px;margin-bottom:18px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.pill{background:transparent;border:0;font-family:inherit;font-size:13px;color:var(--muted);
+  padding:8px 15px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.15s;font-weight:500}
+.pill:hover{color:var(--ink)}
+.pill.active{background:#fff;color:var(--ink);font-weight:600;box-shadow:var(--sh)}
+.panel{display:none;animation:fade .2s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--card);border-radius:var(--r);padding:14px 15px}
+.kpi .lbl{font-size:12.5px;color:var(--muted);font-weight:500}
+.kpi .val{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:2px 0 1px;line-height:1.4}
+.kpi .sub{font-size:12px;color:var(--muted)}
+.kpi .val.ok{color:var(--ok)} .kpi .val.bad{color:var(--bad)} .kpi .val.blue{color:var(--blue)}
+
+h2{font-size:15px;font-weight:600;margin:20px 0 10px}
+h2:first-child{margin-top:0}
+.box{background:var(--card);border-radius:var(--r);padding:14px 15px;margin-bottom:10px}
+.tl{display:flex;flex-direction:column;gap:8px}
+.tl .row{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  background:var(--card);border-radius:var(--r-sm);padding:11px 14px;font-size:13px}
+.tl .row .r{color:var(--muted);font-size:12px;text-align:left;white-space:nowrap}
+.tl .row .l{display:flex;flex-direction:column;gap:1px;min-width:0}
+.tl .row .l small{color:var(--muted);font-size:12px}
+.amt.debit{color:var(--bad);font-weight:600}
+.amt.credit{color:var(--ok);font-weight:600}
+.badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;
+  background:var(--strong);color:var(--muted);font-weight:500}
+.badge.ok{background:var(--ok-soft);color:#15803d}
+.badge.warn{background:var(--warn-soft);color:#b45309}
+.badge.bad{background:var(--bad-soft);color:#b91c1c}
+.track{height:6px;background:var(--strong);border-radius:999px;overflow:hidden;margin-top:8px}
+.track i{display:block;height:100%;border-radius:999px;background:var(--ink);transition:width .4s}
+.track.ok i{background:var(--ok)}.track.warn i{background:var(--warn)}.track.bad i{background:var(--bad)}
+.empty{color:var(--muted);font-size:12.5px;text-align:center;padding:22px 10px;
+  background:var(--card);border-radius:var(--r)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:5px 12px;border-radius:999px;background:#fff;
+  border:1px solid var(--hair);color:var(--body)}
+.err{position:fixed;top:8px;left:8px;z-index:9;background:var(--bad);color:#fff;
+  padding:6px 12px;border-radius:8px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>داشبورد مالی</h1>
+  <div class="hsub">بهوش مالی — حساب‌ها، تراکنش‌ها، بودجه</div>
+  <div class="topbar" data-shell-hide>
+    <a class="tbtn" href="dashboard.html">داشبورد سلامت</a><a class="tbtn" href="connect.html">اتصال به ایجنت</a><a class="tbtn" href="live.html">دستیار جلسه</a>
+    <button class="tbtn" onclick="logout()">خروج</button>
+  </div>
+</header>
+
+<nav class="nav">
+  <button class="pill active" data-t="over">نمای کلی</button>
+  <button class="pill" data-t="acc">حساب‌ها</button>
+  <button class="pill" data-t="tx">تراکنش‌ها</button>
+  <button class="pill" data-t="bud">بودجه</button>
+  <button class="pill" data-t="cat">دسته‌ها</button>
+  <button class="pill" data-t="sms">پیامک‌ها</button>
+  <button class="pill" data-t="aud">گزارش ایجنت</button>
+</nav>
+
+<section class="panel active" id="over">
+  <div class="kpis" id="k-over"></div>
+  <h2>هزینه به تفکیک دسته</h2>
+  <div id="over-cats"></div>
+</section>
+
+<section class="panel" id="acc">
+  <h2>حساب‌ها و موجودی</h2>
+  <div id="acc-list"></div>
+</section>
+
+<section class="panel" id="tx">
+  <h2>تراکنش‌ها</h2>
+  <div class="box" style="display:flex;gap:8px;flex-wrap:wrap">
+    <select id="tx-period" style="font-family:inherit;font-size:12.5px;padding:7px 12px;
+      border-radius:999px;border:1px solid var(--hair);background:#fff">
+      <option value="month">این ماه</option>
+      <option value="week">هفت روز اخیر</option>
+      <option value="year">امسال</option>
+    </select>
+  </div>
+  <div id="tx-list"></div>
+</section>
+
+<section class="panel" id="bud">
+  <h2>وضعیت بودجه</h2>
+  <div id="bud-list"></div>
+</section>
+
+<section class="panel" id="cat">
+  <h2>دسته‌ها</h2>
+  <div id="cat-list"></div>
+</section>
+
+<section class="panel" id="sms">
+  <h2>پیامک‌های بانک</h2>
+  <div id="sms-list"></div>
+</section>
+
+<section class="panel" id="aud">
+  <h2>گزارش نوشتن ایجنت</h2>
+  <div id="aud-list"></div>
+</section>
+
+<script src="config.js"></script>
+<script>
+const API_BASE=(window.BEHOOSH&&window.BEHOOSH.apiBase)||'https://behoosh-api.hashpa.com/v1';
+let CACHE={};
+
+function getToken(){ try{ return localStorage.getItem('behoosh_token')||''; }catch(e){ return ''; } }
+function logout(){
+  try{ localStorage.removeItem('behoosh_token'); localStorage.removeItem('behoosh_scopes'); }catch(e){}
+  location.replace('login.html');
+}
+async function apiGet(path){
+  const token=getToken();
+  const r=await fetch(API_BASE+path,{headers:token?{'X-API-Key':token}:{}});
+  if(r.status===401||r.status===403){ logout(); throw new Error('auth'); }
+  if(!r.ok)throw new Error('HTTP '+r.status);
+  return r.json();
+}
+function el(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function money(v){
+  const n=Number(v||0);
+  return n.toLocaleString('fa-IR',{maximumFractionDigits:0})+' تومان';
+}
+function jdate(s){
+  if(!s)return '';
+  try{ return new Date(s).toLocaleDateString('fa-IR'); }catch(e){ return String(s).slice(0,10); }
+}
+function empty(t){ return '<div class="empty">'+t+'</div>'; }
+
+// ---------- نمای کلی ----------
+async function loadOver(){
+  const d=await apiGet('/finance/summary?period=month');
+  const net=Number(d.net||0);
+  el('k-over').innerHTML=
+    '<div class="kpi"><div class="lbl">درآمد این ماه</div><div class="val ok">'+esc(money(d.income))+'</div></div>'+
+    '<div class="kpi"><div class="lbl">هزینه این ماه</div><div class="val bad">'+esc(money(d.expense))+'</div></div>'+
+    '<div class="kpi"><div class="lbl">خالص</div><div class="val '+(net>=0?'blue':'bad')+'">'+esc(money(net))+'</div>'+
+      '<div class="sub">'+esc((d.from||'')+' تا '+(d.to||''))+'</div></div>';
+  const cats=d.by_category||[];
+  if(!cats.length){ el('over-cats').innerHTML=empty('هنوز هزینه‌ای در این ماه ثبت نشده.'); return; }
+  const max=Math.max.apply(null,cats.map(function(c){return Number(c.amount)||0;}))||1;
+  el('over-cats').innerHTML='<div class="tl">'+cats.map(function(c){
+    const pct=Math.round((Number(c.amount)||0)/max*100);
+    return '<div class="row"><div class="l" style="flex:1">'+esc(c.category)+
+      '<div class="track"><i style="width:'+pct+'%"></i></div></div>'+
+      '<div class="r">'+esc(money(c.amount))+'</div></div>';
+  }).join('')+'</div>';
+}
+
+// ---------- حساب‌ها ----------
+async function loadAcc(){
+  const d=await apiGet('/finance/accounts');
+  const rows=d.accounts||[];
+  if(!rows.length){ el('acc-list').innerHTML=empty('حسابی ثبت نشده.'); return; }
+  el('acc-list').innerHTML='<div class="tl">'+rows.map(function(a){
+    const t={asset:'دارایی',expense:'هزینه',income:'درآمد',liability:'بدهی'}[a.type]||a.type;
+    return '<div class="row"><div class="l"><span>'+esc(a.name)+' <span class="badge">'+esc(t)+'</span></span>'+
+      (a.card_last4?'<small>کارت •••• '+esc(a.card_last4)+'</small>':'')+'</div>'+
+      '<div class="r amt '+(Number(a.balance)>=0?'credit':'debit')+'">'+esc(money(a.balance))+'</div></div>';
+  }).join('')+'</div>';
+}
+
+// ---------- تراکنش‌ها ----------
+async function loadTx(){
+  const period=el('tx-period').value;
+  const d=await apiGet('/finance/transactions?limit=100');
+  const rows=d.transactions||[];
+  if(!rows.length){ el('tx-list').innerHTML=empty('تراکنشی ثبت نشده.'); return; }
+  el('tx-list').innerHTML='<div class="tl">'+rows.map(function(t){
+    const deb=t.direction==='debit';
+    return '<div class="row"><div class="l"><span>'+esc(t.description||t.counterparty||'بدون شرح')+'</span>'+
+      '<small>'+esc(jdate(t.occurred_at))+(t.category?' • '+esc(t.category):'')+
+      (t.source?' • '+esc(t.source):'')+'</small></div>'+
+      '<div class="r amt '+(deb?'debit':'credit')+'">'+(deb?'−':'+')+esc(money(t.amount))+'</div></div>';
+  }).join('')+'</div>';
+}
+
+// ---------- بودجه ----------
+async function loadBud(){
+  const d=await apiGet('/finance/budget');
+  const rows=d.budgets||[];
+  if(!rows.length){ el('bud-list').innerHTML=empty('بودجه‌ای تعریف نشده.'); return; }
+  el('bud-list').innerHTML='<div class="tl">'+rows.map(function(b){
+    const pct=Math.min(100,Number(b.pct)||0);
+    const cls=b.over?'bad':(pct>=80?'warn':'ok');
+    return '<div class="row"><div class="l" style="flex:1"><span>'+esc(b.category)+
+      ' <span class="badge '+cls+'">'+esc(pct.toLocaleString('fa-IR'))+'٪</span></span>'+
+      '<div class="track '+cls+'"><i style="width:'+pct+'%"></i></div>'+
+      '<small>'+esc(money(b.spent))+' از '+esc(money(b.budget))+
+      ' — باقی '+esc(money(b.remaining))+'</small></div></div>';
+  }).join('')+'</div>';
+}
+
+// ---------- دسته‌ها ----------
+async function loadCat(){
+  const d=await apiGet('/finance/categories');
+  const rows=d.categories||[];
+  if(!rows.length){ el('cat-list').innerHTML=empty('دسته‌ای ثبت نشده.'); return; }
+  const exp=rows.filter(function(c){return c.kind==='expense';});
+  const inc=rows.filter(function(c){return c.kind==='income';});
+  el('cat-list').innerHTML=
+    '<h2>هزینه</h2><div class="chips">'+(exp.length?exp.map(function(c){
+      return '<span class="chip">'+esc(c.name)+'</span>';}).join(''):'<span class="chip">—</span>')+'</div>'+
+    '<h2>درآمد</h2><div class="chips">'+(inc.length?inc.map(function(c){
+      return '<span class="chip">'+esc(c.name)+'</span>';}).join(''):'<span class="chip">—</span>')+'</div>';
+}
+
+// ---------- پیامک‌ها ----------
+async function loadSms(){
+  const d=await apiGet('/finance/raw?limit=50');
+  const rows=d.messages||[];
+  if(!rows.length){ el('sms-list').innerHTML=empty('پیامکی ثبت نشده.'); return; }
+  el('sms-list').innerHTML='<div class="tl">'+rows.map(function(m){
+    const cls=m.parsed?'ok':'warn';
+    return '<div class="row"><div class="l"><span>'+esc(m.body)+'</span>'+
+      '<small>'+esc(jdate(m.received_at))+(m.bank?' • '+esc(m.bank):'')+'</small></div>'+
+      '<div class="r"><span class="badge '+cls+'">'+(m.parsed?'دسته‌بندی‌شده':'در صف')+'</span></div></div>';
+  }).join('')+'</div>';
+}
+
+// ---------- گزارش ایجنت ----------
+async function loadAud(){
+  const d=await apiGet('/finance/audit?limit=50');
+  const rows=d.audit||[];
+  if(!rows.length){ el('aud-list').innerHTML=empty('نوشتنی از ایجنت ثبت نشده.'); return; }
+  el('aud-list').innerHTML='<div class="tl">'+rows.map(function(a){
+    return '<div class="row"><div class="l"><span>'+esc(a.tool)+'</span>'+
+      '<small>'+esc(jdate(a.created_at))+' • '+esc(a.actor)+'</small></div>'+
+      '<div class="r"><span class="badge">'+esc(a.id.slice(0,8))+'</span></div></div>';
+  }).join('')+'</div>';
+}
+
+const LOADERS={over:loadOver,acc:loadAcc,tx:loadTx,bud:loadBud,cat:loadCat,sms:loadSms,aud:loadAud};
+
+function showTab(t){
+  document.querySelectorAll('.pill').forEach(function(x){
+    x.classList.toggle('active',x.dataset.t===t); });
+  document.querySelectorAll('.panel').forEach(function(x){
+    x.classList.toggle('active',x.id===t); });
+  const fn=LOADERS[t];
+  if(fn)fn().catch(function(e){
+    if(e&&e.message==='auth')return;
+    el(t).innerHTML='<div class="empty">بارگذاری نشد: '+esc(e.message)+'</div>';
+  });
+}
+
+document.querySelectorAll('.pill').forEach(function(b){
+  b.addEventListener('click',function(){ showTab(b.dataset.t); });
+});
+el('tx-period').addEventListener('change',function(){
+  loadTx().catch(function(){});
+});
+
+async function boot(){
+  if(!getToken()){ location.replace('login.html'); return; }
+  try{ await loadOver(); }
+  catch(e){
+    if(e&&e.message==='auth')return;
+    const b=document.createElement('div'); b.className='err';
+    b.textContent='اتصال به API برقرار نشد'; document.body.appendChild(b);
+  }
+}
+boot();
+</script>
+<script src="shell.js" defer></script>
+</body>
+</html>

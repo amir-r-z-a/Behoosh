@@ -1,0 +1,50 @@
+# بهوش — استقرار روی سرور آروان
+# دیتابیس: my-postgres موجود روی caddy-network (دیتابیس behoosh ساخته شده)
+name: behoosh
+
+networks:
+  behoosh:
+    driver: bridge
+  caddy-network:
+    external: true
+
+services:
+  behoosh-api:
+    image: docker.radeai.info/behoosh/behoosh:latest
+    container_name: behoosh-api
+    restart: unless-stopped
+    command: uvicorn app.api.main:app --host 0.0.0.0 --port 8000
+    env_file: [env/api.env]
+    ports:
+      - "127.0.0.1:8075:8000"
+    networks: [behoosh, caddy-network]
+
+  behoosh-mcp:
+    image: docker.radeai.info/behoosh/behoosh:latest
+    container_name: behoosh-mcp
+    restart: unless-stopped
+    command: python -m app.mcp.server
+    env_file: [env/mcp.env]
+    ports:
+      - "127.0.0.1:8076:8001"
+    networks: [behoosh, caddy-network]
+
+  behoosh-finance-mcp:
+    image: docker.radeai.info/behoosh/behoosh:latest
+    container_name: behoosh-finance-mcp
+    restart: unless-stopped
+    command: python -m app.mcp.finance_server
+    env_file: [env/finance.env]
+    ports:
+      - "127.0.0.1:8078:8002"
+    networks: [behoosh, caddy-network]
+
+  behoosh-dashboard:
+    image: nginx:alpine
+    container_name: behoosh-dashboard
+    restart: unless-stopped
+    volumes:
+      - ../dashboard:/usr/share/nginx/html:ro
+    ports:
+      - "127.0.0.1:8077:80"
+    networks: [behoosh, caddy-network]

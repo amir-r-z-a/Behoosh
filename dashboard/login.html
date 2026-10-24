@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ورود — بهوش</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23111'/%3E%3Ctext x='16' y='22' font-size='17' font-family='sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3E%D8%A8%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#ffffff; --card:#f5f5f5; --strong:#e8e8e8;
+  --ink:#111111; --body:#3f3f46; --muted:#71717a; --hair:#e4e4e7;
+  --bad:#dc2626; --bad-soft:#fee2e2; --ok:#16a34a;
+  --r:16px; --sh:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.03);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Vazirmatn,system-ui,sans-serif;background:var(--canvas);color:var(--ink);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:24px 16px;line-height:1.85;-webkit-font-smoothing:antialiased;
+}
+.wrap{width:100%;max-width:380px}
+.brand{text-align:center;margin-bottom:22px}
+.brand h1{font-size:24px;font-weight:700;letter-spacing:-.02em}
+.brand p{color:var(--muted);font-size:12.5px;margin-top:3px}
+.card{background:var(--card);border-radius:var(--r);padding:24px 22px}
+label{display:block;font-size:12.5px;color:var(--body);font-weight:500;margin-bottom:5px}
+input{
+  width:100%;font-family:inherit;font-size:14px;padding:11px 13px;border-radius:10px;
+  border:1px solid var(--hair);background:#fff;color:var(--ink);margin-bottom:14px;
+  transition:.15s;
+}
+input:focus{outline:0;border-color:var(--ink)}
+button{
+  width:100%;font-family:inherit;font-size:14px;font-weight:600;padding:12px;
+  border-radius:10px;border:0;background:var(--ink);color:#fff;cursor:pointer;transition:.15s;
+}
+button:hover{opacity:.88}
+button:disabled{opacity:.5;cursor:default}
+.msg{border-radius:10px;padding:10px 13px;font-size:12.5px;margin-bottom:14px;display:none}
+.msg.err{display:block;background:var(--bad-soft);color:#b91c1c}
+.msg.ok{display:block;background:#dcfce7;color:#15803d}
+.foot{text-align:center;margin-top:16px;font-size:12px;color:var(--muted)}
+.foot a{color:var(--body);text-decoration:none;border-bottom:1px solid var(--hair)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <h1>بهوش</h1>
+    <p>پلتفرم سلامت و مالی شخصی</p>
+  </div>
+
+  <div class="card">
+    <div class="msg" id="msg"></div>
+    <form id="f" autocomplete="on">
+      <label for="email">ایمیل</label>
+      <input id="email" type="email" name="email" required autocomplete="username" dir="ltr">
+      <label for="password">رمز عبور</label>
+      <input id="password" type="password" name="password" required autocomplete="current-password" dir="ltr">
+      <button id="go" type="submit">ورود</button>
+    </form>
+  </div>
+
+  <div class="foot">با ورود، توکن دسترسی فقط در همین مرورگر ذخیره می‌شود.</div>
+</div>
+
+<script src="config.js"></script>
+<script>
+const base = (window.BEHOOSH && window.BEHOOSH.apiBase) || 'https://behoosh-api.hashpa.com/v1';
+const msg = document.getElementById('msg');
+const go = document.getElementById('go');
+
+function say(text, kind){
+  msg.textContent = text;
+  msg.className = 'msg ' + (kind || 'err');
+}
+
+// اگر قبلا وارد شده، مستقیم برو داشبورد
+try {
+  if (localStorage.getItem('behoosh_token')) {
+    location.replace('dashboard.html');
+  }
+} catch (e) {}
+
+document.getElementById('f').addEventListener('submit', async function(ev){
+  ev.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  if (!email || !password) return;
+
+  go.disabled = true;
+  go.textContent = 'در حال ورود...';
+  msg.className = 'msg';
+
+  try {
+    const r = await fetch(base + '/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email: email, password: password})
+    });
+    const data = await r.json().catch(function(){ return {}; });
+
+    if (!r.ok) {
+      say(r.status === 401 ? 'ایمیل یا رمز اشتباه است.' : ('ورود ناموفق بود (کد ' + r.status + ')'));
+      go.disabled = false; go.textContent = 'ورود';
+      return;
+    }
+    if (!data.token) {
+      say('پاسخ سرور توکن نداشت.');
+      go.disabled = false; go.textContent = 'ورود';
+      return;
+    }
+
+    localStorage.setItem('behoosh_token', data.token);
+    try { localStorage.setItem('behoosh_scopes', JSON.stringify(data.scopes || [])); } catch (e) {}
+    say('ورود موفق. در حال انتقال...', 'ok');
+    location.replace('dashboard.html');
+  } catch (e) {
+    say('اتصال به سرور برقرار نشد.');
+    go.disabled = false; go.textContent = 'ورود';
+  }
+});
+</script>
+</body>
+</html>
