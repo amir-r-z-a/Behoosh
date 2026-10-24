@@ -2,20 +2,26 @@
 
 فاز اول: ایمیل و پسورد ساده، بدون تایید ایمیل. عمدا ساده نگه داشته شده.
 """
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.api.auth_deps import ALL_SCOPES, Principal, get_principal, require_scope
+from app.api.auth_deps import ALL_SCOPES, Principal, get_principal
+from app.core.config import get_settings
+from app.core.ratelimit import RateLimiter, client_ip
 from app.core.security import hash_password, new_token, verify_password, hash_token
 from app.db.auth_models import ApiToken, AuthCredential
 from app.db.models import User
 from app.db.session import get_db
 
 router = APIRouter(prefix="/v1/auth", tags=["auth"])
+
+_settings = get_settings()
+# سقف تلاش ورود و ثبت‌نام، جدا برای هر IP و هر ایمیل (ضد حدس رمز).
+limiter = RateLimiter(_settings.auth_rate_limit, _settings.auth_rate_window_s)
 
 
 class RegisterIn(BaseModel):
@@ -44,9 +50,15 @@ class TokenOut(BaseModel):
 
 
 @router.post("/register", status_code=201)
-def register(payload: RegisterIn, db: Session = Depends(get_db)):
-    """ساخت کاربر + اعتبارنامه. بدون تایید ایمیل در این فاز."""
+def register(payload: RegisterIn, request: Request, db: Session = Depends(get_db)):
+    """ساخت کاربر + اعتبارنامه. بدون تایید ایمیل در این فاز.
+
+    فقط وقتی ALLOW_REGISTRATION=true باشد باز است.
+    """
+    if not get_settings().allow_registration:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "registration is disabled")
     email = payload.email.lower().strip()
+    limiter.check(f"ip:{client_ip(request)}", f"email:{email}")
     exists = db.execute(
         select(AuthCredential).where(func.lower(AuthCredential.email) == email)
     ).scalar_one_or_none()
@@ -70,9 +82,13 @@ def register(payload: RegisterIn, db: Session = Depends(get_db)):
 
 
 @router.post("/login")
-def login(payload: LoginIn, db: Session = Depends(get_db)):
-    """ورود. یک توکن دسترسی برمی‌گرداند که خودش هویت است."""
+def login(payload: LoginIn, request: Request, db: Session = Depends(get_db)):
+    """ورود. یک توکن دسترسی برمی‌گرداند که خودش هویت است.
+
+    توکن ورود بعد از SESSION_TTL_DAYS منقضی می‌شود و داشبورد دوباره به صفحه ورود می‌رود.
+    """
     email = payload.email.lower().strip()
+    limiter.check(f"ip:{client_ip(request)}", f"email:{email}")
     cred = db.execute(
         select(AuthCredential).where(func.lower(AuthCredential.email) == email)
     ).scalar_one_or_none()
@@ -81,13 +97,16 @@ def login(payload: LoginIn, db: Session = Depends(get_db)):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "invalid email or password")
 
     raw = new_token()
+    ttl = get_settings().session_ttl_days
+    expires = datetime.now(timezone.utc) + timedelta(days=ttl) if ttl > 0 else None
     row = ApiToken(user_id=cred.user_id, token_hash=hash_token(raw),
-                   scopes=list(ALL_SCOPES), name="login", kind="session")
+                   scopes=list(ALL_SCOPES), name="login", kind="session",
+                   expires_at=expires)
     db.add(row)
     cred.last_login_at = datetime.now(timezone.utc)
     db.commit()
     return {"ok": True, "token": raw, "scopes": list(ALL_SCOPES),
-            "user_id": str(cred.user_id)}
+            "user_id": str(cred.user_id), "expires_at": expires}
 
 
 @router.get("/me")

@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime, timezone
 
 import httpx
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.live_models import (

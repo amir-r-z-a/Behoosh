@@ -1,7 +1,7 @@
 """اندپوینت جامع داشبورد: همه داده لازم برای رندر یکجا."""
 from datetime import date, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -94,7 +94,7 @@ def dashboard(days: int = 30,
 
     # مزاج دو محوره: بردار روزانه + بردار اقلام امروز
     from app.db.models import (TemperamentExam, TemperamentProfile,
-                               TemperamentState, TemperamentVector)
+                               TemperamentVector)
     from app.temperament import day_vector, label as tlabel
     # بردار حالت هر روز را از خود وعده‌ها محاسبه کن (جدول حالت ممکن است خالی باشد)
     from app.temperament import state_vector as _state_vec

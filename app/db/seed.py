@@ -12,7 +12,7 @@ def main() -> None:
     try:
         u = db.execute(select(User)).scalars().first()
         if not u:
-            u = User(display_name="امیرمهدی", method="hybrid", timezone=s.timezone)
+            u = User(display_name=s.seed_display_name, method="hybrid", timezone=s.timezone)
             db.add(u)
             db.flush()
             print("created user", u.id)

@@ -15,8 +15,9 @@ cd behoosh
 
 ۲. ساخت فایل محیط:
 ```bash
-cp .env.example .env
-# DATABASE_URL و API_TOKEN را پر کن
+cp deploy/env/api.env.example .env
+# DATABASE_URL را پر کن. API_TOKEN یا یک رشته تصادفی بلند باشد یا AUTH_LEGACY_TOKEN=false.
+# مقدار نمونه CHANGE_ME پذیرفته نمی‌شود.
 ```
 
 ۳. بالا آوردن سرویس‌ها:
@@ -24,6 +25,9 @@ cp .env.example .env
 cd deploy
 docker compose up -d --build
 ```
+
+مایگریشن‌ها خودکار قبل از بالا آمدن API اجرا می‌شوند (`python -m app.db.migrate`).
+وضعیت: `docker compose exec api python -m app.db.migrate --status`
 
 ۴. ساخت کاربر اولیه:
 ```bash

@@ -7,12 +7,10 @@
 import json
 import os
 
-import httpx
 from mcp.server.fastmcp import FastMCP
 
-from app.mcp import _auth
+from app.mcp import _auth, _client
 
-API = os.getenv("BEHOOSH_API", "http://api:8000")
 # توکن از هدر درخواست کاربر خوانده می‌شود (app/mcp/_auth.py).
 _auth.set_env_token(os.getenv("FINANCE_API_TOKEN", ""))
 
@@ -20,14 +18,7 @@ mcp = FastMCP("behoosh-finance", host="0.0.0.0", port=8002)
 
 
 def _req(method: str, path: str, body: dict | None = None, params: dict | None = None):
-    r = httpx.request(
-        method, f"{API}/v1/finance{path}",
-        json=body, params=params,
-        headers={"X-API-Key": _auth.current_token()}, timeout=30,
-    )
-    if r.status_code >= 400:
-        return {"ok": False, "status": r.status_code, "error": r.text[:400]}
-    return r.json()
+    return _client.request(method, f"/finance{path}", body=body, params=params)
 
 
 def _get(path: str, params: dict | None = None):
@@ -217,12 +208,7 @@ def finance_transaction_correct(transaction_id: str | None = None,
                  ("exclude_from_summary", exclude_from_summary)):
         if v is not None:
             body[k] = v
-    r = httpx.patch(f"{API}/v1/finance/transaction/{tid}", json=body,
-                    headers={"X-API-Key": _auth.current_token()}, timeout=30)
-    if r.status_code >= 400:
-        return json.dumps({"ok": False, "status": r.status_code, "error": r.text[:400]},
-                          ensure_ascii=False)
-    return json.dumps(r.json(), ensure_ascii=False)
+    return json.dumps(_req("PATCH", f"/transaction/{tid}", body=body), ensure_ascii=False)
 
 
 # ---------- بدهی و تعهد ----------
@@ -281,12 +267,8 @@ def finance_liability_update(liability_id: str, name: str | None = None,
                  ("status", status), ("note", note)):
         if v is not None:
             body[k] = v
-    r = httpx.patch(f"{API}/v1/finance/liability/{liability_id}", json=body,
-                    headers={"X-API-Key": _auth.current_token()}, timeout=30)
-    if r.status_code >= 400:
-        return json.dumps({"ok": False, "status": r.status_code, "error": r.text[:400]},
-                          ensure_ascii=False)
-    return json.dumps(r.json(), ensure_ascii=False)
+    return json.dumps(_req("PATCH", f"/liability/{liability_id}", body=body),
+                      ensure_ascii=False)
 
 
 @mcp.tool()

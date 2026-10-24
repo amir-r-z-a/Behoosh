@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.db.models import (
-    BodyMetric, Habit, Meal, MoodLog, Prayer, ScreenTime, SleepLog, Workout,
+    Habit, Meal, MoodLog, Prayer, ScreenTime, SleepLog, Workout,
 )
 
 
@@ -51,7 +51,7 @@ def day_summary(db: Session, user_id, d: date) -> dict:
     # مزاج دو محوره روز
     temp = {"cold_warm": 0.0, "dry_wet": 0.0, "label": "بدون داده"}
     try:
-        from app.temperament import day_vector, label, state_vector
+        from app.temperament import day_vector, label
         cw, dw, n_items = day_vector(db, user_id, d)
         if n_items:
             temp = {"cold_warm": round(cw, 3), "dry_wet": round(dw, 3),

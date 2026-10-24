@@ -1,5 +1,5 @@
 """مدل‌های ورودی و خروجی API. اعتبارسنجی در سطح اسکیما، نه رشته."""
-from datetime import date, datetime
+from datetime import date
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator

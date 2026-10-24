@@ -10,16 +10,17 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.auth_routes import router as auth_router
 from app.api.finance_routes import read as fin_read, write as fin_write
-from app.api.routes import router
+from app.api.health import router
 from app.api.dashboard import router as dash_router
 from app.api.live_routes import router as live_router
+from app.core.config import get_settings
 
 app = FastAPI(title="بهوش", version="0.2.0",
               description="پلتفرم سلامت و مالی شخصی")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=get_settings().cors_origin_list,
     allow_methods=["*"],
     allow_headers=["*"],
 )

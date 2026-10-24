@@ -7,6 +7,7 @@
 روزانه سلامت قطع نشوند. به‌محض اینکه توکن‌های واقعی ساخته شدند، آن را
 با AUTH_LEGACY_TOKEN=false خاموش کن.
 """
+import hmac
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
@@ -64,7 +65,8 @@ def get_principal(
     settings = get_settings()
 
     # مسیر سازگاری: توکن ثابت قدیمی. بعد از انتقال کامل، خاموش شود.
-    if settings.auth_legacy_token and raw == settings.api_token:
+    if settings.legacy_token_enabled and hmac.compare_digest(
+            raw.encode(), settings.api_token.encode()):
         from app.db.models import User
         uid = db.execute(select(User.id).order_by(User.created_at)).scalars().first()
         if not uid:
@@ -90,8 +92,18 @@ def get_principal(
 
 def require_scope(scope: str):
     """وابستگی کارخانه‌ای: مسیر فقط با scope لازم باز می‌شود."""
+    return require_any_scope(scope)
+
+
+def require_any_scope(*scopes: str):
+    """مسیر با داشتن هر کدام از scope ها باز می‌شود.
+
+    کاربرد: مسیرهای خواندن سلامت هم با health:read و هم با health:write باز
+    می‌شوند تا توکن‌های فقط-نوشتن قدیمی ایجنت‌ها نشکنند.
+    """
     def _dep(p: Principal = Depends(get_principal)) -> Principal:
-        if not p.has(scope):
-            raise HTTPException(status.HTTP_403_FORBIDDEN, f"missing scope: {scope}")
+        if not any(p.has(s) for s in scopes):
+            raise HTTPException(status.HTTP_403_FORBIDDEN,
+                                f"missing scope: {' or '.join(scopes)}")
         return p
     return _dep

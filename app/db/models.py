@@ -1,9 +1,9 @@
-"""مدل‌های SQLAlchemy — آینه اسکیمای migrations/001_schema.sql."""
+"""مدل‌های SQLAlchemy — آینه اسکیمای migrations/."""
 import uuid
 from datetime import date, datetime
 
 from sqlalchemy import (
-    Boolean, Date, DateTime, ForeignKey, Integer, Numeric, SmallInteger, String, Text,
+    Boolean, Date, DateTime, ForeignKey, Integer, Numeric, SmallInteger, Text,
     UniqueConstraint, func,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID

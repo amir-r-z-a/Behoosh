@@ -5,24 +5,11 @@
 """
 import json
 
-import httpx
-
-from app.mcp import _auth
-
-API = None
-
-
-def _api() -> str:
-    import os
-    return os.getenv("BEHOOSH_API", "http://api:8000")
+from app.mcp import _client
 
 
 def _req(method: str, path: str, body: dict | None = None, params: dict | None = None):
-    r = httpx.request(method, f"{_api()}/v1/live{path}", json=body, params=params,
-                      headers={"X-API-Key": _auth.current_token()}, timeout=60)
-    if r.status_code >= 400:
-        return {"ok": False, "status": r.status_code, "error": r.text[:400]}
-    return r.json()
+    return _client.request(method, f"/live{path}", body=body, params=params, timeout=60)
 
 
 def register(mcp) -> None:

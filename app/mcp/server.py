@@ -3,12 +3,10 @@ import json
 import os
 from datetime import date
 
-import httpx
 from mcp.server.fastmcp import FastMCP
 
-from app.mcp import _auth, live_tools
+from app.mcp import _auth, _client, live_tools
 
-API = os.getenv("BEHOOSH_API", "http://api:8000")
 # توکن از هدر درخواست کاربر خوانده می‌شود (app/mcp/_auth.py).
 # توکن محیطی فقط به‌عنوان fallback اختیاری است.
 _auth.set_env_token(os.getenv("API_TOKEN", ""))
@@ -16,31 +14,21 @@ _auth.set_env_token(os.getenv("API_TOKEN", ""))
 mcp = FastMCP("behoosh", host="0.0.0.0", port=8001)
 
 
+# تول‌های سلامت روی خطای HTTP استثنا می‌دهند تا ایجنت خطا را ببیند.
 def _post(path: str, body: dict) -> dict:
-    r = httpx.post(f"{API}/v1{path}", json=body,
-                   headers={"X-API-Key": _auth.current_token()}, timeout=30)
-    r.raise_for_status()
-    return r.json()
+    return _client.request("POST", path, body=body, raise_errors=True)
 
 
 def _get(path: str, params: dict) -> dict:
-    r = httpx.get(f"{API}/v1{path}", params=params,
-                  headers={"X-API-Key": _auth.current_token()}, timeout=30)
-    r.raise_for_status()
-    return r.json()
+    return _client.request("GET", path, params=params, raise_errors=True)
 
 
 def _patch(path: str, body: dict) -> dict:
-    r = httpx.patch(f"{API}/v1{path}", json=body,
-                    headers={"X-API-Key": _auth.current_token()}, timeout=30)
-    r.raise_for_status()
-    return r.json()
+    return _client.request("PATCH", path, body=body, raise_errors=True)
 
 
 def _delete(path: str) -> dict:
-    r = httpx.delete(f"{API}/v1{path}", headers={"X-API-Key": _auth.current_token()}, timeout=30)
-    r.raise_for_status()
-    return r.json()
+    return _client.request("DELETE", path, raise_errors=True)
 
 
 @mcp.tool()

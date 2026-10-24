@@ -2,11 +2,11 @@
 
 هر مسیر با scope خودش باز می‌شود. user_id همیشه از توکن می‌آید.
 """
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.auth_deps import (
