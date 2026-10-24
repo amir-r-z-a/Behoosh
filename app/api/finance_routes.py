@@ -179,7 +179,11 @@ def transactions(p: Principal = Depends(require_scope(SCOPE_FINANCE_READ)),
                  account_id: str | None = None, category_id: str | None = None,
                  direction: str | None = None, limit: int = Query(100, le=500),
                  offset: int = 0):
-    """لیست تراکنش‌ها با فیلتر."""
+    """لیست تراکنش‌ها با فیلتر.
+
+    direction از دید کاربر است: debit یعنی پول از حساب خارج شده، credit یعنی وارد.
+    kind یکی از expense، income، transfer است.
+    """
     s, e = _rng(start, end)
     q = select(FinTransaction).where(
         FinTransaction.user_id == p.user_id,
@@ -188,26 +192,40 @@ def transactions(p: Principal = Depends(require_scope(SCOPE_FINANCE_READ)),
     )
     if category_id:
         q = q.where(FinTransaction.category_id == category_id)
-    q = q.order_by(FinTransaction.occurred_at.desc()).limit(limit).offset(offset)
+    if account_id:
+        q = q.where(FinTransaction.id.in_(
+            select(FinEntry.transaction_id).where(FinEntry.account_id == account_id)))
+    q = q.order_by(FinTransaction.occurred_at.desc())
+    # فیلتر جهت بعد از محاسبه دید کاربر اعمال می‌شود، پس صفحه‌بندی هم بعد از آن.
+    if not direction:
+        q = q.limit(limit).offset(offset)
+    txs = db.execute(q).scalars().all()
 
     cats = {c.id: c.name for c in db.execute(
         select(FinCategory).where(FinCategory.user_id == p.user_id)).scalars().all()}
+    entries: dict = {}
+    if txs:
+        rows = db.execute(
+            select(FinEntry.transaction_id, FinEntry.direction, FinEntry.amount,
+                   FinAccount.type, FinAccount.name)
+            .join(FinAccount, FinAccount.id == FinEntry.account_id)
+            .where(FinEntry.transaction_id.in_([t.id for t in txs]))).all()
+        for tid, d, amt, typ, name in rows:
+            entries.setdefault(tid, []).append((d, amt, typ, name))
     out = []
-    for tx in db.execute(q).scalars().all():
-        ents = db.execute(select(FinEntry).where(
-            FinEntry.transaction_id == tx.id)).scalars().all()
-        if account_id and not any(str(x.account_id) == account_id for x in ents):
-            continue
-        if direction and not any(x.direction == direction for x in ents):
+    for tx in txs:
+        view = svc.user_view(entries.get(tx.id, []))
+        if direction and view["direction"] != direction:
             continue
         out.append({
             "id": str(tx.id), "occurred_at": tx.occurred_at,
             "description": tx.description, "counterparty": tx.counterparty,
             "category": cats.get(tx.category_id), "source": tx.source,
-            "external_ref": tx.external_ref,
-            "amount": float(max((x.amount for x in ents), default=0)),
-            "direction": next((x.direction for x in ents), None),
+            "external_ref": tx.external_ref, "is_transfer": tx.is_transfer,
+            "excluded": tx.exclude_from_summary, **view,
         })
+    if direction:
+        out = out[offset:offset + limit]
     return {"transactions": out, "count": len(out)}
 
 
@@ -230,6 +248,13 @@ def summary(p: Principal = Depends(require_scope(SCOPE_FINANCE_READ)),
     else:
         s, e = _rng(start, end, from_jalali, to_jalali)
     return svc.summary(db, p.user_id, s, e)
+
+
+@read.get("/cashflow")
+def cashflow(p: Principal = Depends(require_scope(SCOPE_FINANCE_READ)),
+             db: Session = Depends(get_db), months: int = Query(6, ge=1, le=24)):
+    """درآمد و هزینه ماه‌های شمسی اخیر، برای نمودار جریان نقدی."""
+    return {"months": svc.cashflow(db, p.user_id, months)}
 
 
 @read.get("/budget")

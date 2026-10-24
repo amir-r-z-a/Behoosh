@@ -1,83 +1,71 @@
-:root{
-  --canvas:#ffffff; --soft:#fafafa; --card:#f5f5f5; --strong:#e8e8e8;
-  --ink:#111111; --body:#3f3f46; --muted:#71717a; --hair:#e4e4e7;
-  --ok:#16a34a; --ok-soft:#dcfce7; --warn:#d97706; --warn-soft:#fef3c7;
-  --bad:#dc2626; --bad-soft:#fee2e2; --blue:#2563eb; --violet:#7c3aed;
-  --r:14px; --r-sm:10px;
-  --sh:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.03);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Vazirmatn,system-ui,sans-serif;background:var(--canvas);color:var(--ink);
-  padding:18px 14px 40px;max-width:960px;margin:0 auto;line-height:1.85;
-  -webkit-font-smoothing:antialiased;
-}
-header{margin-bottom:18px}
-h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
-.hsub{color:var(--muted);font-size:12.5px;margin-top:2px}
-.nav{display:flex;gap:6px;overflow-x:auto;padding:6px;background:var(--card);
-  border-radius:999px;margin-bottom:18px;scrollbar-width:none}
-.nav::-webkit-scrollbar{display:none}
-.pill{background:transparent;border:0;font-family:inherit;font-size:13px;color:var(--muted);
-  padding:8px 15px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.15s;font-weight:500}
-.pill:hover{color:var(--ink)}
-.pill.active{background:#fff;color:var(--ink);font-weight:600;box-shadow:var(--sh)}
-.panel{display:none;animation:fade .2s ease}
-.panel.active{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+/* داشبورد سلامت — فقط اجزای مخصوص همین صفحه. پایه در theme.css است. */
 
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:16px}
-.kpi{background:var(--card);border-radius:var(--r);padding:14px 15px;position:relative;overflow:hidden}
-.kpi .lbl{font-size:12.5px;color:var(--muted);font-weight:500}
-.kpi .val{font-size:23px;font-weight:700;letter-spacing:-.02em;margin:2px 0 1px;line-height:1.4}
-.kpi .sub{font-size:12px;color:var(--muted)}
-.kpi .spark{margin-top:8px;height:26px}
-.track{height:5px;background:var(--strong);border-radius:999px;overflow:hidden;margin-top:9px}
-.track i{display:block;height:100%;border-radius:999px;background:var(--ink);transition:width .4s}
-.track.ok i{background:var(--ok)}.track.warn i{background:var(--warn)}.track.bad i{background:var(--bad)}
+.score-body{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.score-meta{flex:1;min-width:150px;display:flex;flex-direction:column;gap:8px}
+.score-verdict{font-size:20px;font-weight:800;letter-spacing:-.01em}
+.streaks{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.streaks .chip svg{width:15px;height:15px;color:var(--acc)}
 
-h2{font-size:15px;font-weight:700;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
-h2::before{content:'';width:3px;height:15px;background:var(--ink);border-radius:2px}
-.box{background:var(--card);border-radius:var(--r);padding:15px;margin-bottom:12px}
-.box .hd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;gap:10px;flex-wrap:wrap}
-.box .hd b{font-size:13px;font-weight:600}
-.box .hd span{font-size:12px;color:var(--muted)}
-svg.ch{width:100%;height:auto;display:block;overflow:visible;direction:ltr}
-.sel{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-sm);
-  padding:7px 10px;font-family:inherit;font-size:12.5px;color:var(--ink);cursor:pointer}
-.qbtn{font-family:inherit;font-size:12.5px;padding:6px 12px;border-radius:999px;
-  background:var(--canvas);border:1px solid var(--hair);color:var(--muted);cursor:pointer;transition:.15s}
-.qbtn:hover{border-color:var(--ink);color:var(--ink)}
-.qbtn.on{background:var(--ink);border-color:var(--ink);color:#fff}
-#tp2-plot text{font-family:Vazirmatn,sans-serif}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:10px}
-.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-left:5px;vertical-align:middle}
+.goal-rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:14px 8px;justify-items:center}
+.goal{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.goal-name{font-size:12.5px;font-weight:600;color:var(--text-2);display:inline-flex;align-items:center;gap:5px}
+.goal-name svg{width:14px;height:14px;color:var(--acc)}
+.goal-sub{font-size:11.5px;color:var(--muted);line-height:1.4}
 
-table{width:100%;border-collapse:collapse;font-size:12.5px}
-th,td{text-align:right;padding:9px 6px;border-bottom:1px solid var(--hair)}
-th{color:var(--muted);font-weight:500;font-size:12px}
-tbody tr:last-child td{border-bottom:0}
-tbody tr:hover{background:rgba(0,0,0,.015)}
-.tw{background:var(--card);border-radius:var(--r);padding:6px 12px;overflow-x:auto}
+.insights{list-style:none;display:flex;flex-direction:column;gap:10px}
+.insights li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.75;color:var(--text-2)}
+.insights li .ico{width:30px;height:30px;border-radius:9px}
+.insights li .ico svg{width:15px;height:15px}
+.insights b{color:var(--text)}
 
-.badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;
-  background:var(--strong);color:var(--muted);font-weight:500}
-.badge.ok{background:var(--ok-soft);color:#15803d}
-.badge.warn{background:var(--warn-soft);color:#b45309}
-.badge.bad{background:var(--bad-soft);color:#b91c1c}
-.note{background:var(--warn-soft);border-radius:var(--r);padding:12px 14px;font-size:12px;
-  color:#92400e;margin-bottom:14px;line-height:1.8}
+.prayer-row{display:flex;gap:6px;flex-wrap:wrap}
+.pray{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;
+  background:var(--surface-3);color:var(--muted)}
+.pray.done{background:var(--ok-soft);color:var(--ok-ink)}
+.pray.late,.pray.qada{background:var(--warn-soft);color:var(--warn-ink)}
+.pray.missed{background:var(--bad-soft);color:var(--bad-ink)}
 
-.tl{display:flex;flex-direction:column;gap:8px}
-.tl .row{display:flex;justify-content:space-between;align-items:center;gap:10px;
-  background:var(--card);border-radius:var(--r-sm);padding:11px 14px;font-size:13px}
-.tl .row .r{color:var(--muted);font-size:12px;text-align:left}
-.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-left:7px;vertical-align:middle}
+/* نقشه عضلات */
+.mapwrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:center;align-items:flex-start}
+.mapwrap figure{display:flex;flex-direction:column;align-items:center;gap:4px}
+.mapwrap figcaption{font-size:12px;color:var(--muted)}
+.mapwrap svg{width:min(230px,38vw);height:auto;direction:ltr}
+.muscle{cursor:pointer;transition:opacity .15s,filter .15s}
+.muscle:hover{opacity:.78}
+.muscle.sel{filter:drop-shadow(0 0 6px var(--text))}
+#md{margin-top:12px;min-height:44px}
+.rec-legend i{width:10px;height:10px;border-radius:3px}
 
-.mapwrap{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;align-items:flex-start}
-.mapwrap svg{width:min(280px,42vw);height:auto;direction:ltr}
-.muscle{cursor:pointer;transition:opacity .15s}
-.muscle:hover{opacity:.75}
-#md{background:var(--soft);border-radius:var(--r-sm);padding:11px 13px;font-size:12.5px;
-  margin-top:14px;min-height:42px;color:var(--body)}
-.foot{color:var(--muted);font-size:12px;margin-top:30px;text-align:center}
+/* میله‌های افقی HTML (راست‌به‌چپ) */
+.hbars{display:flex;flex-direction:column;gap:10px}
+.hbar{display:grid;grid-template-columns:96px 1fr 38px;align-items:center;gap:10px;font-size:13px}
+.hbar .nm{color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbar .v{color:var(--muted);text-align:end;font-variant-numeric:tabular-nums}
+.hbar .progress{height:10px}
+
+/* هیت‌مپ پایبندی */
+.heat{overflow-x:auto;padding-bottom:4px}
+.heat-grid{display:grid;gap:4px;align-items:center;direction:ltr}
+.heat-grid .rl{font-size:12.5px;color:var(--text-2);padding-inline-start:10px;white-space:nowrap;direction:rtl}
+.heat-grid .cell{height:24px;border-radius:6px;background:var(--acc,var(--health));cursor:default}
+.heat-grid .cl{font-size:10.5px;color:var(--muted);text-align:center;white-space:nowrap;writing-mode:horizontal-tb}
+.heat-scale{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-top:10px}
+.heat-scale i{width:18px;height:12px;border-radius:4px;background:var(--health)}
+
+/* دیالوگ ثبت سریع */
+.stepper{display:flex;gap:8px;align-items:center}
+.stepper .input{text-align:center;max-width:120px}
+.stepper .btn{min-width:44px;min-height:42px;font-size:18px}
+.sliders label{display:flex;justify-content:space-between}
+.sliders output{font-weight:800;color:var(--text)}
+input[type="range"]{width:100%;accent-color:var(--health);min-height:30px;cursor:pointer}
+.prayer-toggles{display:flex;flex-wrap:wrap;gap:6px}
+.prayer-toggles button{border:1px solid var(--border);background:var(--surface);color:var(--text-2);border-radius:999px;
+  padding:6px 14px;min-height:38px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.prayer-toggles button svg{width:15px;height:15px}
+.prayer-toggles button[aria-pressed="true"]{background:var(--ok-soft);border-color:transparent;color:var(--ok-ink)}
+
+.plane-wrap svg{width:100%;height:auto;direction:ltr}
+.kpi .spark{height:38px}
+.goals-card{display:flex;flex-direction:column}
+.goals-card .goal-rings{flex:1;align-content:center}

@@ -1,80 +1,79 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
+<script src="js/theme.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>اتصال به ایجنت — بهوش</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23111'/%3E%3Ctext x='16' y='22' font-size='17' font-family='sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3E%D8%A8%3C/text%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2310B981'/%3E%3Cstop offset='.55' stop-color='%232563EB'/%3E%3Cstop offset='1' stop-color='%237C3AED'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-size='17' font-family='sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3E%D8%A8%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
 <link rel="stylesheet" href="css/connect.css">
 </head>
 <body>
-<div class="wrap">
+<div class="app">
+<main class="app-main" id="main">
 
-  <div class="top">
-    <h1>اتصال به ایجنت</h1>
-    <button class="ghost sm" id="logout">خروج</button>
-  </div>
-  <div class="sub">برای هر حوزه یک توکن بساز و JSON آماده را در ایجنتت بگذار. توکن فقط یک بار نشان داده می‌شود.</div>
-
-  <div class="nav" data-shell-hide>
-    <a href="dashboard.html">سلامتی</a>
-    <a href="finance.html">مالی</a>
-    <a href="live.html">جلسه</a>
-    <a href="connect.html" class="on">اتصال به ایجنت</a>
-  </div>
-
-  <!-- ============ سلامت ============ -->
-  <div class="sec" id="sec-health">
-    <h2><span class="dot" style="background:#16a34a"></span>حوزه سلامت</h2>
-    <div class="hint">غذا، خواب، ورزش، بدن، نماز، حال، اسکرین‌تایم، مزاج</div>
-
-    <label for="name-health">نام توکن</label>
-    <input id="name-health" type="text" value="ایجنت سلامت" dir="auto">
-
-    <label>دسترسی</label>
-    <div class="scopes" id="sc-health">
-      <label class="chk"><input type="checkbox" value="health:read" checked> خواندن</label>
-      <label class="chk"><input type="checkbox" value="health:write" checked> نوشتن</label>
+  <header class="page-head">
+    <div>
+      <div class="eyebrow t-agent"><i></i>ایجنت‌ها و دسترسی</div>
+      <h1>اتصال به ایجنت</h1>
+      <p>برای هر حوزه یک توکن جدا بساز و تنظیمات آماده را در ایجنتت بگذار. هر توکن فقط به همان حوزه دسترسی دارد.</p>
     </div>
+  </header>
 
-    <div class="msg" id="msg-health"></div>
-    <button id="go-health">ساخت توکن سلامت</button>
+  <section class="card how t-agent" aria-labelledby="how-h">
+    <h2 id="how-h" class="sr-only">چطور وصل کنم</h2>
+    <ol class="how-steps">
+      <li><span class="how-n">۱</span><div><b>حوزه و دسترسی را انتخاب کن</b><p>خواندن برای گزارش، نوشتن برای ثبت داده. کمترین دسترسی لازم را بده.</p></div></li>
+      <li><span class="how-n">۲</span><div><b>توکن را بساز و کپی کن</b><p>توکن فقط یک بار نشان داده می‌شود؛ همراه JSON آماده برای MCP.</p></div></li>
+      <li><span class="how-n">۳</span><div><b>در ایجنت بگذار و ری‌استارت کن</b><p>مثلا در <code class="ltr">claude_desktop_config.json</code>. ابزارها ظاهر می‌شوند.</p></div></li>
+    </ol>
+  </section>
 
-    <div class="out" id="out-health"></div>
-  </div>
+  <div class="section-title"><h2>ساخت توکن جدید</h2><span>هر حوزه سرور و دسترسی جدا دارد</span></div>
+  <div class="grid g-3 domains" id="domains"></div>
 
-  <!-- ============ مالی ============ -->
-  <div class="sec" id="sec-finance">
-    <h2><span class="dot" style="background:#7c3aed"></span>حوزه مالی</h2>
-    <div class="hint">حساب‌ها، تراکنش‌ها، بودجه، دسته‌ها، پیامک بانکی</div>
-
-    <label for="name-finance">نام توکن</label>
-    <input id="name-finance" type="text" value="ایجنت مالی" dir="auto">
-
-    <label>دسترسی</label>
-    <div class="scopes" id="sc-finance">
-      <label class="chk"><input type="checkbox" value="finance:read" checked> خواندن</label>
-      <label class="chk"><input type="checkbox" value="finance:write"> نوشتن</label>
+  <section class="card reveal" id="reveal" hidden aria-live="polite">
+    <div class="card-head">
+      <div><h3 id="reveal-title">توکن ساخته شد</h3><p id="reveal-sub"></p></div>
+      <button class="icon-btn" type="button" id="reveal-close" aria-label="بستن"></button>
     </div>
+    <div class="callout t-warn" id="reveal-warn"></div>
+    <div class="field">
+      <div class="row-lbl"><span class="label">توکن</span><button class="btn btn-ghost btn-sm" type="button" data-copy="tok"></button></div>
+      <div class="secret ltr" id="reveal-token"></div>
+    </div>
+    <div class="field">
+      <div class="row-lbl"><span class="label">JSON آماده برای کلاینت MCP</span><button class="btn btn-ghost btn-sm" type="button" data-copy="json"></button></div>
+      <pre class="code ltr" id="reveal-json"></pre>
+    </div>
+    <p class="reveal-hint" id="reveal-hint"></p>
+  </section>
 
-    <div class="msg" id="msg-finance"></div>
-    <button id="go-finance">ساخت توکن مالی</button>
+  <div class="section-title"><h2>توکن‌های من</h2><span id="tok-count"></span></div>
+  <section class="card card-flush">
+    <div id="tlist"><div class="tl-skel"><div class="skeleton" style="height:18px;width:40%"></div><div class="skeleton" style="height:14px;width:70%"></div></div></div>
+  </section>
+  <p class="foot-note">توکن‌های «ورود» همان نشست‌های داشبورد روی مرورگرها هستند. ابطال آن‌ها یعنی خروج آن مرورگر.</p>
 
-    <div class="out" id="out-finance"></div>
-  </div>
-
-  <!-- ============ توکن‌های من ============ -->
-  <div class="sec">
-    <h2>توکن‌های من</h2>
-    <div class="hint">هر توکنی که دیگر لازم نیست را باطل کن.</div>
-    <div class="tlist" id="tlist"><div class="empty">در حال بارگذاری...</div></div>
-  </div>
-
+</main>
 </div>
 
+<dialog class="sheet" id="confirm">
+  <form method="dialog">
+    <div class="sheet-head"><h3>ابطال توکن</h3></div>
+    <div class="sheet-body"><p id="confirm-text" class="muted"></p></div>
+    <div class="sheet-foot">
+      <button class="btn btn-danger" value="ok" id="confirm-ok">باطل کن</button>
+      <button class="btn btn-ghost" value="cancel">انصراف</button>
+    </div>
+  </form>
+</dialog>
+
 <script src="config.js"></script>
+<script src="js/app.js"></script>
 <script src="js/connect.js"></script>
-<script src="shell.js" defer></script>
+<script src="shell.js"></script>
 </body>
 </html>

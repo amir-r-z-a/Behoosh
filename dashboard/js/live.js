@@ -656,7 +656,7 @@ function rmDraw(){
     if(i===0) rm.ctx2d.moveTo(x,y); else rm.ctx2d.lineTo(x,y);
   }
   rm.ctx2d.closePath();
-  rm.ctx2d.strokeStyle='#111'; rm.ctx2d.lineWidth=1.8; rm.ctx2d.globalAlpha=.62; rm.ctx2d.stroke();
+  rm.ctx2d.strokeStyle=(getComputedStyle(document.documentElement).getPropertyValue('--meeting').trim()||'#7C3AED'); rm.ctx2d.lineWidth=2; rm.ctx2d.globalAlpha=.7; rm.ctx2d.stroke();
   rm.ctx2d.globalAlpha=1;
   // نوارهای میله‌ای زیر دایره
   if(rm.bars){
@@ -798,7 +798,7 @@ setState=function(txt,cls){
   var live = cls==='rec';
   $('recRing').classList.toggle('live',live);
   $('btnStart').setAttribute('aria-label', live?'پایان ضبط':'شروع ضبط');
-  $('ctaHint').textContent = live ? 'دایره قرمز را بزن تا تمام شود' : 'برای شروع، دایره سیاه را بزن';
+  $('ctaHint').textContent = live ? 'در حال ضبط؛ دایره را بزن تا تمام شود' : 'برای شروع، دایره را بزن';
   var c=$('chunkPill'); if(c) c.textContent = fa(seq) + ' تکه';
 };
 // تکه شمار هم زنده شود
@@ -908,3 +908,11 @@ window.addEventListener('beforeunload', function (e) {
   if (!recording) return;
   e.preventDefault(); e.returnValue = '';
 });
+
+// آیکن‌های جای‌گذار صفحه (data-ico) از مجموعه آیکن مشترک پر می‌شوند.
+(function () {
+  if (!window.BH || !BH.icon) return;
+  document.querySelectorAll('[data-ico]').forEach(function (el) {
+    el.innerHTML = BH.icon(el.getAttribute('data-ico'));
+  });
+})();

@@ -1,187 +1,193 @@
-const BASE = (window.BEHOOSH && window.BEHOOSH.apiBase) || 'https://behoosh-api.hashpa.com/v1';
-const MCP_HEALTH = 'https://behoosh-mcp.hashpa.com/mcp';
-const MCP_FINANCE = 'https://behoosh-mcp.hashpa.com/finance/mcp';
+/* اتصال به ایجنت: ساخت توکن scope‌دار برای هر حوزه، نمایش یک‌باره توکن و JSON کلاینت MCP،
+   فهرست و ابطال توکن‌ها. */
+(function () {
+  'use strict';
+  var BH = window.BH;
+  if (!BH.requireAuth()) return;
 
-let TOKEN = null;
-try { TOKEN = localStorage.getItem('behoosh_token'); } catch (e) {}
-if (!TOKEN) location.replace('login.html');
+  var MCP_HEALTH = 'https://behoosh-mcp.hashpa.com/mcp';
+  var MCP_FINANCE = 'https://behoosh-mcp.hashpa.com/finance/mcp';
 
-function authHeaders(extra){
-  const h = Object.assign({'X-API-Key': TOKEN}, extra || {});
-  return h;
-}
+  // ابزارهای جلسه روی همان سرور MCP سلامت ثبت شده‌اند (app/mcp/server.py).
+  var DOMAINS = [
+    { k: 'health', t: 'سلامت', icon: 'heart', cls: 't-health', name: 'ایجنت سلامت', key: 'behoosh-health', url: MCP_HEALTH,
+      desc: 'غذا، خواب، ورزش، بدن، نماز، حال، اسکرین‌تایم و مزاج', tools: 21, read: true, write: true },
+    { k: 'finance', t: 'مالی', icon: 'wallet', cls: 't-finance', name: 'ایجنت مالی', key: 'behoosh-finance', url: MCP_FINANCE,
+      desc: 'حساب‌ها، تراکنش‌ها، بودجه، وام، دسته‌ها و پیامک بانکی', tools: 20, read: true, write: false },
+    { k: 'meeting', t: 'جلسه', icon: 'mic', cls: 't-meeting', name: 'ایجنت جلسه', key: 'behoosh-meeting', url: MCP_HEALTH,
+      desc: 'خواندن متن زنده جلسه و ثبت نظر وسط جلسه', tools: 13, read: true, write: true }
+  ];
+  var SCOPE_FA = { read: 'خواندن', write: 'نوشتن' };
+  var DOMAIN_FA = { health: 'سلامت', finance: 'مالی', meeting: 'جلسه' };
 
-async function api(path, opts){
-  opts = opts || {};
-  opts.headers = authHeaders(opts.headers);
-  const r = await fetch(BASE + path, opts);
-  if (r.status === 401 || r.status === 403) {
-    try { localStorage.removeItem('behoosh_token'); } catch (e) {}
-    location.replace('login.html');
-    throw new Error('auth');
+  /* ---------- کارت‌های حوزه ---------- */
+  function sw(d, s, on) {
+    var id = 'sc-' + d.k + '-' + s;
+    return '<label class="switch" for="' + id + '"><input type="checkbox" id="' + id + '" value="' + d.k + ':' + s + '"' + (on ? ' checked' : '') + '>' +
+      '<span class="track" aria-hidden="true"><i></i></span><span class="sw-txt"><b>' + SCOPE_FA[s] + '</b><small>' +
+      (s === 'read' ? 'گزارش و پرس‌وجو' : 'ثبت و ویرایش داده') + '</small></span></label>';
   }
-  return r;
-}
+  document.getElementById('domains').innerHTML = DOMAINS.map(function (d) {
+    return '<section class="card domain ' + d.cls + '" aria-labelledby="h-' + d.k + '">' +
+      '<div class="domain-top"><span class="kpi-icon">' + BH.icon(d.icon) + '</span>' +
+      '<span class="badge">' + BH.n(d.tools) + ' ابزار</span></div>' +
+      '<h3 id="h-' + d.k + '">حوزه ' + d.t + '</h3><p class="domain-desc">' + d.desc + '</p>' +
+      '<div class="field"><label for="name-' + d.k + '">نام توکن</label>' +
+      '<input class="input" id="name-' + d.k + '" type="text" value="' + d.name + '" dir="auto" maxlength="120"></div>' +
+      '<fieldset class="scopes"><legend class="label">دسترسی</legend>' + sw(d, 'read', d.read) + sw(d, 'write', d.write) + '</fieldset>' +
+      '<div class="domain-msg" id="msg-' + d.k + '" role="alert"></div>' +
+      '<button class="btn btn-soft domain-go" type="button" id="go-' + d.k + '">' + BH.icon('key') + '<span>ساخت توکن ' + d.t + '</span></button>' +
+      '</section>';
+  }).join('');
 
-function say(id, text, kind){
-  const el = document.getElementById('msg-' + id);
-  el.textContent = text;
-  el.className = 'msg ' + (kind || 'err');
-}
-function clearSay(id){
-  const el = document.getElementById('msg-' + id);
-  el.className = 'msg';
-  el.textContent = '';
-}
+  function say(k, text) {
+    var el = document.getElementById('msg-' + k);
+    el.innerHTML = text ? BH.icon('alert') + '<span>' + BH.esc(text) + '</span>' : '';
+  }
 
-document.getElementById('logout').addEventListener('click', function(){
-  try {
-    localStorage.removeItem('behoosh_token');
-    localStorage.removeItem('behoosh_scopes');
-  } catch (e) {}
-  location.replace('login.html');
-});
-
-// چک‌باکس‌ها ظاهر خاموش/روشن
-document.querySelectorAll('.chk input').forEach(function(cb){
-  function sync(){ cb.closest('.chk').classList.toggle('off', !cb.checked); }
-  cb.addEventListener('change', sync); sync();
-});
-
-function buildJson(key, url, token){
-  const obj = { mcpServers: {} };
-  obj.mcpServers[key] = {
-    type: 'http',
-    url: url,
-    headers: { Authorization: 'Bearer ' + token }
-  };
-  return JSON.stringify(obj, null, 2);
-}
-
-function renderOut(domain, token, scopes){
-  const isFin = domain === 'finance';
-  const url = isFin ? MCP_FINANCE : MCP_HEALTH;
-  const key = isFin ? 'behoosh-finance' : 'behoosh-health';
-  const json = buildJson(key, url, token);
-  const box = document.getElementById('out-' + domain);
-
-  box.innerHTML =
-    '<div class="msg warn">این توکن فقط همین یک بار نشان داده می‌شود. همین حالا کپی کن.</div>' +
-    '<div class="lbl"><span>توکن</span><button class="ghost sm" data-copy="tok">کپی</button></div>' +
-    '<div class="tokbox" id="tok-' + domain + '">' + token + '</div>' +
-    '<div class="lbl"><span>JSON آماده برای ایجنت</span><button class="ghost sm" data-copy="json">کپی JSON</button></div>' +
-    '<pre id="json-' + domain + '">' + json.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</pre>' +
-    '<ol class="steps">' +
-      '<li>فایل تنظیمات MCP ایجنتت را باز کن (در کلود دسکتاپ: <code>claude_desktop_config.json</code>).</li>' +
-      '<li>محتوای بالا را داخلش بگذار. اگر <code>mcpServers</code> از قبل هست، فقط کلید <code>' + key + '</code> را اضافه کن.</li>' +
-      '<li>ایجنت را ری‌استارت کن. ابزارها باید بیایند.</li>' +
-    '</ol>';
-
-  box.classList.add('show');
-
-  box.querySelectorAll('[data-copy]').forEach(function(btn){
-    btn.addEventListener('click', async function(){
-      const isTok = btn.getAttribute('data-copy') === 'tok';
-      const text = isTok ? token : json;
-      try {
-        await navigator.clipboard.writeText(text);
-        const old = btn.textContent;
-        btn.textContent = 'کپی شد';
-        setTimeout(function(){ btn.textContent = old; }, 1500);
-      } catch (e) {
-        const r = document.createRange();
-        r.selectNodeContents(document.getElementById((isTok ? 'tok-' : 'json-') + domain));
-        const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-        btn.textContent = 'دستی کپی کن';
-      }
-    });
+  /* ---------- نمایش یک‌باره توکن ---------- */
+  var reveal = document.getElementById('reveal');
+  var current = { token: '', json: '' };
+  document.getElementById('reveal-close').innerHTML = BH.icon('x');
+  document.getElementById('reveal-warn').innerHTML = BH.icon('alert') +
+    '<span>این توکن <b>فقط همین یک بار</b> نشان داده می‌شود. همین حالا کپی کن و جای امن نگه دار.</span>';
+  BH.$$('[data-copy]', reveal).forEach(function (b) { b.innerHTML = BH.icon('copy') + '<span>کپی</span>'; });
+  document.getElementById('reveal-close').addEventListener('click', function () {
+    reveal.hidden = true; current = { token: '', json: '' };
+    document.getElementById('reveal-token').textContent = '';
+    document.getElementById('reveal-json').textContent = '';
   });
-}
 
-async function createToken(domain){
-  const isFin = domain === 'finance';
-  const btn = document.getElementById('go-' + domain);
-  clearSay(domain);
-
-  const name = document.getElementById('name-' + domain).value.trim() || (isFin ? 'ایجنت مالی' : 'ایجنت سلامت');
-  const scopes = Array.from(
-    document.querySelectorAll('#sc-' + domain + ' input:checked')
-  ).map(function(c){ return c.value; });
-
-  if (!scopes.length) { say(domain, 'حداقل یک دسترسی انتخاب کن.'); return; }
-
-  btn.disabled = true;
-  const old = btn.textContent;
-  btn.textContent = 'در حال ساخت...';
-
-  try {
-    const r = await api('/auth/tokens', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({name: name, scopes: scopes, kind: 'api'})
-    });
-    const data = await r.json().catch(function(){ return {}; });
-
-    if (!r.ok) {
-      say(domain, 'ساخت توکن نشد (کد ' + r.status + ').');
-      return;
-    }
-    const raw = data.token || data.raw_token || data.key;
-    if (!raw) {
-      say(domain, 'سرور توکن برنگرداند.');
-      return;
-    }
-    renderOut(domain, raw, scopes);
-    say(domain, 'توکن ساخته شد.', 'ok');
-    loadTokens();
-  } catch (e) {
-    if (e.message !== 'auth') say(domain, 'اتصال به سرور برقرار نشد.');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = old;
+  function buildJson(key, url, token) {
+    var obj = { mcpServers: {} };
+    obj.mcpServers[key] = { type: 'http', url: url, headers: { Authorization: 'Bearer ' + token } };
+    return JSON.stringify(obj, null, 2);
   }
-}
-
-document.getElementById('go-health').addEventListener('click', function(){ createToken('health'); });
-document.getElementById('go-finance').addEventListener('click', function(){ createToken('finance'); });
-
-async function loadTokens(){
-  const list = document.getElementById('tlist');
-  try {
-    const r = await api('/auth/tokens');
-    const data = await r.json().catch(function(){ return {}; });
-    const items = data.tokens || data.items || (Array.isArray(data) ? data : []);
-
-    if (!items.length) {
-      list.innerHTML = '<div class="empty">هنوز توکنی نساخته‌ای.</div>';
-      return;
+  function showReveal(d, token, scopes, name) {
+    current.token = token;
+    current.json = buildJson(d.key, d.url, token);
+    reveal.className = 'card reveal ' + d.cls;
+    document.getElementById('reveal-title').textContent = 'توکن «' + name + '» ساخته شد';
+    document.getElementById('reveal-sub').textContent = 'حوزه ' + d.t + ' — ' + scopes.map(function (s) { return SCOPE_FA[s.split(':')[1]]; }).join(' و ');
+    document.getElementById('reveal-token').textContent = token;
+    document.getElementById('reveal-json').textContent = current.json;
+    document.getElementById('reveal-hint').innerHTML = 'اگر <code class="ltr">mcpServers</code> از قبل در فایل تنظیمات هست، فقط کلید <code class="ltr">' +
+      d.key + '</code> را به آن اضافه کن و ایجنت را دوباره راه بینداز.';
+    reveal.hidden = false;
+    reveal.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  async function copyText(text, btn) {
+    try { await navigator.clipboard.writeText(text); BH.toast('کپی شد'); }
+    catch (e) {
+      var r = document.createRange(); r.selectNodeContents(btn.closest('.field').querySelector('.secret,.code'));
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      BH.toast('انتخاب شد؛ دستی کپی کن', 'info');
     }
-    list.innerHTML = items.map(function(t){
-      const sc = (t.scopes || []).join('، ') || '—';
-      const nm = t.name || 'بدون نام';
-      const id = t.id || t.token_id;
-      return '<div class="trow">' +
-        '<div><div class="nm">' + nm + '</div><div class="sc">' + sc + '</div></div>' +
-        '<button class="ghost sm" data-revoke="' + id + '">باطل</button>' +
-      '</div>';
+  }
+  BH.$$('[data-copy]', reveal).forEach(function (b) {
+    b.addEventListener('click', function () { copyText(b.getAttribute('data-copy') === 'tok' ? current.token : current.json, b); });
+  });
+
+  /* ---------- ساخت توکن ---------- */
+  async function createToken(d) {
+    var btn = document.getElementById('go-' + d.k);
+    say(d.k, '');
+    var name = document.getElementById('name-' + d.k).value.trim() || d.name;
+    var scopes = BH.$$('#domains .domain.' + d.cls + ' input[type=checkbox]:checked').map(function (c) { return c.value; });
+    if (!scopes.length) { say(d.k, 'حداقل یک دسترسی انتخاب کن.'); return; }
+    btn.disabled = true;
+    var lbl = btn.querySelector('span'), old = lbl.textContent;
+    lbl.textContent = 'در حال ساخت…';
+    try {
+      var data = await BH.api('/auth/tokens', { body: { name: name, scopes: scopes, kind: 'api' } });
+      var raw = data && (data.token || data.raw_token || data.key);
+      if (!raw) { say(d.k, 'سرور توکن برنگرداند.'); return; }
+      showReveal(d, raw, scopes, name);
+      BH.toast('توکن ساخته شد');
+      loadTokens();
+    } catch (e) {
+      if (e.message === 'auth') return;
+      say(d.k, e.status === 403 ? 'این دسترسی را نداری که به توکن بدهی.' : e.status ? 'ساخت توکن نشد (کد ' + BH.fa(e.status) + ').' : 'اتصال به سرور برقرار نشد.');
+    } finally {
+      btn.disabled = false; lbl.textContent = old;
+    }
+  }
+  DOMAINS.forEach(function (d) {
+    document.getElementById('go-' + d.k).addEventListener('click', function () { createToken(d); });
+  });
+
+  /* ---------- فهرست و ابطال ---------- */
+  function scopeChips(scopes) {
+    var by = {};
+    (scopes || []).forEach(function (s) { var p = s.split(':'); (by[p[0]] = by[p[0]] || []).push(SCOPE_FA[p[1]] || p[1]); });
+    var ks = Object.keys(by);
+    if (!ks.length) return '<span class="muted">—</span>';
+    return ks.map(function (k) {
+      var cls = k === 'health' ? 't-health' : k === 'finance' ? 't-finance' : k === 'meeting' ? 't-meeting' : '';
+      return '<span class="scope-chip ' + cls + '"><i class="dot"></i>' + (DOMAIN_FA[k] || k) + ': ' + by[k].join('، ') + '</span>';
     }).join('');
-
-    list.querySelectorAll('[data-revoke]').forEach(function(btn){
-      btn.addEventListener('click', async function(){
-        if (!confirm('این توکن باطل شود؟')) return;
-        btn.disabled = true;
-        try {
-          const r = await api('/auth/tokens/' + btn.getAttribute('data-revoke'), {method: 'DELETE'});
-          if (r.ok || r.status === 204) loadTokens();
-          else { btn.disabled = false; alert('باطل نشد (کد ' + r.status + ')'); }
-        } catch (e) {
-          if (e.message !== 'auth') { btn.disabled = false; alert('اتصال برقرار نشد.'); }
-        }
-      });
-    });
-  } catch (e) {
-    if (e.message !== 'auth') list.innerHTML = '<div class="empty">لیست توکن‌ها نیامد.</div>';
   }
-}
+  function ago(iso) {
+    if (!iso) return 'هرگز';
+    var d = new Date(iso), diff = (Date.now() - d.getTime()) / 1000;
+    if (diff < 90) return 'همین حالا';
+    if (diff < 3600) return BH.n(Math.round(diff / 60)) + ' دقیقه پیش';
+    if (diff < 86400) return BH.n(Math.round(diff / 3600)) + ' ساعت پیش';
+    if (diff < 86400 * 7) return BH.n(Math.round(diff / 86400)) + ' روز پیش';
+    return BH.date(iso, 'short');
+  }
 
-loadTokens();
+  var dlg = document.getElementById('confirm');
+  function confirmRevoke(name, isSession) {
+    document.getElementById('confirm-text').textContent = 'توکن «' + name + '» برای همیشه باطل می‌شود و هر ایجنت یا مرورگری که از آن استفاده می‌کند قطع می‌شود.' +
+      (isSession ? ' اگر این نشست همین مرورگر باشد، از حساب خارج می‌شوی.' : '');
+    if (!dlg.showModal) return Promise.resolve(window.confirm(document.getElementById('confirm-text').textContent));
+    return new Promise(function (res) {
+      dlg.returnValue = '';
+      dlg.addEventListener('close', function h() { dlg.removeEventListener('close', h); res(dlg.returnValue === 'ok'); });
+      dlg.showModal();
+    });
+  }
+
+  async function loadTokens() {
+    var list = document.getElementById('tlist');
+    try {
+      var data = await BH.api('/auth/tokens');
+      var items = data.tokens || data.items || (Array.isArray(data) ? data : []);
+      document.getElementById('tok-count').textContent = items.length ? BH.n(items.length) + ' توکن فعال' : '';
+      if (!items.length) { list.innerHTML = BH.empty('هنوز توکنی نساخته‌ای.', 'key'); return; }
+      list.innerHTML = '<div class="tok-head" aria-hidden="true"><span>نام</span><span>دسترسی</span><span>ساخته‌شده</span><span>آخرین استفاده</span><span></span></div>' +
+        items.map(function (t) {
+          var session = t.kind === 'session';
+          var id = t.id || t.token_id;
+          return '<div class="tok-row">' +
+            '<div class="tok-name"><span class="ico ' + (session ? 't-info' : 't-agent') + '">' + BH.icon(session ? 'monitor' : 'key') + '</span>' +
+              '<div><b>' + BH.esc(t.name || (session ? 'ورود' : 'بدون نام')) + '</b>' +
+              '<span class="badge ' + (session ? 'info' : 'warn') + '">' + (session ? 'نشست مرورگر' : 'ایجنت') + '</span></div></div>' +
+            '<div class="tok-scopes">' + scopeChips(t.scopes) + '</div>' +
+            '<div class="tok-meta"><span class="m-lbl">ساخته‌شده</span>' + BH.date(t.created_at, 'short') + '</div>' +
+            '<div class="tok-meta"><span class="m-lbl">آخرین استفاده</span>' + ago(t.last_used_at) + '</div>' +
+            '<div class="tok-act"><button class="btn btn-ghost btn-sm" type="button" data-revoke="' + BH.esc(id) + '" data-name="' + BH.esc(t.name || '') +
+              '" data-session="' + session + '">' + BH.icon('x') + '<span>ابطال</span></button></div>' +
+            '</div>';
+        }).join('');
+      BH.$$('[data-revoke]', list).forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+          var ok = await confirmRevoke(btn.getAttribute('data-name') || 'بدون نام', btn.getAttribute('data-session') === 'true');
+          if (!ok) return;
+          btn.disabled = true;
+          try {
+            await BH.api('/auth/tokens/' + btn.getAttribute('data-revoke'), { method: 'DELETE' });
+            BH.toast('توکن باطل شد');
+            loadTokens();
+          } catch (e) {
+            if (e.message !== 'auth') { btn.disabled = false; BH.toast('ابطال نشد', 'alert'); }
+          }
+        });
+      });
+    } catch (e) {
+      if (e.message !== 'auth') list.innerHTML = BH.empty('فهرست توکن‌ها نیامد.', 'alert');
+    }
+  }
+  loadTokens();
+})();

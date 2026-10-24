@@ -105,3 +105,88 @@ def test_finance_double_entry_flow(client, user):
 
     assert client.post("/v1/finance/account", headers=h,
                        json={"name": "x", "type": "nonsense"}).status_code == 422
+
+
+def _accounts(client, h):
+    client.post("/v1/finance/account", headers=h, json={"name": "بانک", "type": "بانک"})
+    client.post("/v1/finance/account", headers=h, json={"name": "نقد", "type": "نقد"})
+    return {a["name"]: a["id"] for a in
+            client.get("/v1/finance/accounts", headers=h).json()["accounts"]}
+
+
+def test_transaction_list_reports_users_point_of_view(client, user):
+    h = user["headers"]
+    acc = _accounts(client, h)
+    for body in (
+        {"amount": 500, "direction": "debit", "description": "خرید"},
+        {"amount": 9000, "direction": "credit", "description": "حقوق"},
+        {"amount": 200, "direction": "debit", "description": "انتقال",
+         "counter_account_id": acc["نقد"], "is_transfer": True},
+    ):
+        r = client.post("/v1/finance/transaction", headers=h,
+                        json={"occurred_at": "2026-10-20", "account_id": acc["بانک"], **body})
+        assert r.status_code == 201, r.text
+
+    txs = {t["description"]: t for t in client.get(
+        "/v1/finance/transactions", params={"start": "2026-10-01", "end": "2026-10-31"},
+        headers=h).json()["transactions"]}
+    assert (txs["خرید"]["direction"], txs["خرید"]["kind"]) == ("debit", "expense")
+    assert (txs["حقوق"]["direction"], txs["حقوق"]["kind"]) == ("credit", "income")
+    t = txs["انتقال"]
+    assert (t["direction"], t["kind"], t["account"], t["counter_account"]) == (
+        "debit", "transfer", "بانک", "نقد")
+    assert txs["خرید"]["account"] == "بانک" and txs["خرید"]["amount"] == 500
+
+    out = client.get("/v1/finance/transactions", headers=h, params={
+        "start": "2026-10-01", "end": "2026-10-31", "direction": "credit"}).json()
+    assert [x["description"] for x in out["transactions"]] == ["حقوق"]
+    cash = client.get("/v1/finance/transactions", headers=h, params={
+        "start": "2026-10-01", "end": "2026-10-31", "account_id": acc["نقد"]}).json()
+    assert [x["description"] for x in cash["transactions"]] == ["انتقال"]
+
+
+def test_cashflow_by_jalali_month(client, user):
+    h = user["headers"]
+    acc = _accounts(client, h)
+    for d, amt, direction in (("1405/07/10", 1000, "credit"), ("1405/07/12", 300, "debit"),
+                              ("1405/06/05", 50, "debit")):
+        client.post("/v1/finance/transaction", headers=h, json={
+            "occurred_at": d, "amount": amt, "direction": direction, "account_id": acc["بانک"]})
+    from datetime import date
+
+    from app.db.session import SessionLocal
+    from app.services import finance as svc
+
+    db = SessionLocal()
+    try:
+        uid = user["user_id"]
+        months = svc.cashflow(db, uid, 3, today=date(2026, 10, 20))
+    finally:
+        db.close()
+    assert [m["month"] for m in months] == ["1405/05", "1405/06", "1405/07"]
+    assert months[-1]["income"] == 1000 and months[-1]["expense"] == 300
+    assert months[1]["expense"] == 50
+    r = client.get("/v1/finance/cashflow", params={"months": 2}, headers=h)
+    assert r.status_code == 200 and len(r.json()["months"]) == 2
+
+
+def test_dashboard_details(client, user):
+    from datetime import date
+    h = user["headers"]
+    today = date.today().isoformat()
+    client.post("/v1/log_meal", headers=h, json={"log_date": today, "slot": "lunch", "items": [
+        {"name": "مرغ", "quantity": 150, "unit": "gram", "kcal": 300, "protein_g": 40}]})
+    client.post("/v1/log_sleep", headers=h, json={
+        "log_date": today, "main_hours": 7, "bedtime": "23:30", "wake_time": "06:30"})
+    client.post("/v1/log_workout", headers=h, json={
+        "log_date": today, "kind": "باشگاه", "duration_min": 40, "muscles": ["chest"],
+        "sets": [{"exercise": "پرس", "sets": 4, "reps": 10, "weight_kg": 50}]})
+    client.post("/v1/log_prayer", headers=h, json={"log_date": today, "prayer": "fajr",
+                                                   "status": "done"})
+    d = client.get("/v1/dashboard", params={"days": 7}, headers=h).json()
+    assert d["meals_today"][0]["name"] == "مرغ"
+    assert d["sleep_log"][0]["bedtime"] == "23:30"
+    assert d["workouts"][0]["sets"][0]["exercise"] == "پرس"
+    assert d["prayers_today"] == {"fajr": "done"}
+    assert d["habit_today"] is None
+    assert client.get("/v1/dashboard", params={"days": 999}, headers=h).status_code == 422

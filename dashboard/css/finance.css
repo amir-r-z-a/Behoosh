@@ -1,65 +1,102 @@
-:root{
-  --canvas:#ffffff; --soft:#fafafa; --card:#f5f5f5; --strong:#e8e8e8;
-  --ink:#111111; --body:#3f3f46; --muted:#71717a; --hair:#e4e4e7;
-  --ok:#16a34a; --ok-soft:#dcfce7; --warn:#d97706; --warn-soft:#fef3c7;
-  --bad:#dc2626; --bad-soft:#fee2e2; --blue:#2563eb; --violet:#7c3aed;
-  --r:14px; --r-sm:10px;
-  --sh:0 1px 2px rgba(0,0,0,.04),0 1px 3px rgba(0,0,0,.03);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Vazirmatn,system-ui,sans-serif;background:var(--canvas);color:var(--ink);
-  padding:18px 14px 40px;max-width:960px;margin:0 auto;line-height:1.85;
-  -webkit-font-smoothing:antialiased;
-}
-header{margin-bottom:18px}
-h1{font-size:22px;font-weight:700;letter-spacing:-.01em}
-.hsub{color:var(--muted);font-size:12.5px;margin-top:2px}
-.topbar{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
-.tbtn{font-family:inherit;font-size:12px;padding:6px 14px;border-radius:999px;
-  border:1px solid var(--hair);background:#fff;color:var(--body);cursor:pointer;text-decoration:none}
-.tbtn:hover{background:var(--card)}
-.nav{display:flex;gap:6px;overflow-x:auto;padding:6px;background:var(--card);
-  border-radius:999px;margin-bottom:18px;scrollbar-width:none}
-.nav::-webkit-scrollbar{display:none}
-.pill{background:transparent;border:0;font-family:inherit;font-size:13px;color:var(--muted);
-  padding:8px 15px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.15s;font-weight:500}
-.pill:hover{color:var(--ink)}
-.pill.active{background:#fff;color:var(--ink);font-weight:600;box-shadow:var(--sh)}
-.panel{display:none;animation:fade .2s ease}
-.panel.active{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+/* داشبورد مالی — فقط تکمیل‌های این صفحه؛ پایه در theme.css است. */
+.mt{margin-top:14px}
+.period-select{width:auto;min-width:140px}
+.sk-kpi{min-height:132px;border:0}
+.tab .badge{padding:0 7px;font-size:11px}
+[data-ic]{display:inline-flex}
+[data-ic] svg{width:17px;height:17px}
 
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-bottom:16px}
-.kpi{background:var(--card);border-radius:var(--r);padding:14px 15px}
-.kpi .lbl{font-size:12.5px;color:var(--muted);font-weight:500}
-.kpi .val{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:2px 0 1px;line-height:1.4}
-.kpi .sub{font-size:12px;color:var(--muted)}
-.kpi .val.ok{color:var(--ok)} .kpi .val.bad{color:var(--bad)} .kpi .val.blue{color:var(--blue)}
+.legend-top{margin-top:0;gap:4px 12px;font-size:12px}
 
-h2{font-size:15px;font-weight:600;margin:20px 0 10px}
-h2:first-child{margin-top:0}
-.box{background:var(--card);border-radius:var(--r);padding:14px 15px;margin-bottom:10px}
-.tl{display:flex;flex-direction:column;gap:8px}
-.tl .row{display:flex;justify-content:space-between;align-items:center;gap:10px;
-  background:var(--card);border-radius:var(--r-sm);padding:11px 14px;font-size:13px}
-.tl .row .r{color:var(--muted);font-size:12px;text-align:left;white-space:nowrap}
-.tl .row .l{display:flex;flex-direction:column;gap:1px;min-width:0}
-.tl .row .l small{color:var(--muted);font-size:12px}
-.amt.debit{color:var(--bad);font-weight:600}
-.amt.credit{color:var(--ok);font-weight:600}
-.badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;
-  background:var(--strong);color:var(--muted);font-weight:500}
-.badge.ok{background:var(--ok-soft);color:#15803d}
-.badge.warn{background:var(--warn-soft);color:#b45309}
-.badge.bad{background:var(--bad-soft);color:#b91c1c}
-.track{height:6px;background:var(--strong);border-radius:999px;overflow:hidden;margin-top:8px}
-.track i{display:block;height:100%;border-radius:999px;background:var(--ink);transition:width .4s}
-.track.ok i{background:var(--ok)}.track.warn i{background:var(--warn)}.track.bad i{background:var(--bad)}
-.empty{color:var(--muted);font-size:12.5px;text-align:center;padding:22px 10px;
-  background:var(--card);border-radius:var(--r)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:12px;padding:5px 12px;border-radius:999px;background:#fff;
-  border:1px solid var(--hair);color:var(--body)}
-.err{position:fixed;top:8px;left:8px;z-index:9;background:var(--bad);color:#fff;
-  padding:6px 12px;border-radius:8px;font-size:12px}
+/* بینش‌های خودکار */
+.insights{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.insight{--acc:var(--finance);--acc-soft:var(--finance-soft);flex:1 1 260px;display:flex;gap:10px;align-items:flex-start;
+  padding:12px 14px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);
+  font-size:13px;line-height:1.8;color:var(--text-2);box-shadow:var(--shadow-sm)}
+.insight .ico{width:32px;height:32px;border-radius:10px}
+.insight b{color:var(--text)}
+
+/* مبلغ‌ها */
+.amt{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.amt.in{color:var(--ok-ink)}
+.amt.out{color:var(--text)}
+.amt.tr{color:var(--muted)}
+.neg{color:var(--bad-ink) !important}
+
+/* فهرست تراکنش اخیر */
+.k-expense{--acc:var(--c5);--acc-soft:var(--bad-soft)}
+.k-income{--acc:var(--ok);--acc-soft:var(--ok-soft)}
+.k-transfer{--acc:var(--muted);--acc-soft:var(--surface-3)}
+
+/* بودجه */
+.bud-row{padding:10px 0;border-bottom:1px solid var(--border)}
+.bud-row:last-child{border-bottom:0}
+.bud-row .top{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:7px}
+.bud-row .top span{color:var(--muted);font-size:12px;white-space:nowrap}
+
+/* قسط پیش رو */
+.due-amount{font-size:24px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.due-meta{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--muted);margin:6px 0 10px}
+.due-when{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--warn-ink)}
+.due-when svg{width:16px;height:16px}
+
+/* ابزار تراکنش */
+.tx-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.tx-tools .grow{flex:1 1 240px}
+.tx-sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.tx-desc{max-width:340px}
+.tx-desc .title{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-desc .meta{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-date{white-space:nowrap;color:var(--text-2)}
+@media (max-width:640px){
+  .hide-sm{display:none}
+  .tx-desc{max-width:150px}
+  .tx-tools .segmented{width:100%;display:grid;grid-template-columns:repeat(4,1fr)}
+  .tx-tools .btn{width:100%}
+}
+
+/* کارت حساب */
+.acc-card{display:flex;flex-direction:column;gap:10px}
+.acc-card .bal{font-size:22px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.acc-card .row{display:flex;align-items:center;gap:10px}
+.acc-card .name{font-weight:700}
+.acc-card .sub{font-size:12px;color:var(--muted)}
+.liab-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.liab-stats div{background:var(--surface-2);border-radius:var(--r-sm);padding:8px 10px;font-size:12px;color:var(--muted)}
+.liab-stats b{display:block;color:var(--text);font-size:13.5px;font-variant-numeric:tabular-nums}
+
+/* خط زمانی ایجنت */
+.timeline{display:flex;flex-direction:column}
+.tl-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.tl-item:last-child{border-bottom:0}
+.tl-item .grow{flex:1;min-width:0}
+.tl-item .title{font-weight:600;font-size:13.5px}
+.tl-item .meta{font-size:12px;color:var(--muted)}
+.kv{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.kv span{font-size:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:1px 8px;color:var(--text-2);
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.sms-body{font-size:13px;color:var(--text-2);line-height:1.8;word-break:break-word}
+
+/* فرم ثبت */
+.kind-switch{width:100%;display:grid;grid-template-columns:1fr 1fr}
+.kind-switch button{min-height:38px}
+.kind-switch button[data-k="debit"][aria-pressed="true"]{color:var(--bad-ink)}
+.kind-switch button[data-k="credit"][aria-pressed="true"]{color:var(--ok-ink)}
+.amount-input{font-size:20px;font-weight:700;direction:ltr;text-align:right}
+.hint{font-size:12px;color:var(--muted);min-height:18px}
+.grid.tight{gap:12px}
+.form-err{font-size:13px;color:var(--bad-ink);background:var(--bad-soft);border-radius:var(--r-sm);padding:8px 12px}
+@media (max-width:640px){ .grid.g-2.tight{grid-template-columns:1fr 1fr} }
+
+/* محتوای کارت بالای هاله تزئینی */
+.card-glow > *{position:relative;z-index:1}
+.kpi-value{white-space:nowrap}
+.kpi-value small{font-size:12px}
+@media (max-width:640px){
+  #k-over .kpi-value{font-size:22px}
+  #k-over .card{padding:14px}
+}
+
+/* عنوان نمودار جریان نقدی و راهنما در موبایل زیر هم بروند */
+@media (max-width:640px){ #over .card-head{flex-wrap:wrap} }

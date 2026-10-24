@@ -2,325 +2,240 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>داشبورد سلامت — بهوش</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23111'/%3E%3Ctext x='16' y='22' font-size='17' font-family='sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3E%D8%A8%3C/text%3E%3C/svg%3E">
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="js/theme.js"></script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2310B981'/%3E%3Cstop offset='.55' stop-color='%232563EB'/%3E%3Cstop offset='1' stop-color='%237C3AED'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-size='17' font-family='sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3E%D8%A8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
 <link rel="stylesheet" href="css/dashboard.css">
-<script src="config.js"></script>
 </head>
 <body>
+<div class="app">
+<main class="app-main" id="main">
 
-<header>
-  <h1>داشبورد سلامت</h1>
-  <div class="hsub">امروز، تغذیه، خواب، ورزش، بدن، ذهن، اسکرین‌تایم، مزاج</div>
-  <div data-shell-hide style="margin-top:10px;display:flex;gap:8px"><button onclick="logout()" style="font-family:inherit;font-size:12px;padding:6px 14px;border-radius:999px;border:1px solid var(--hair);background:#fff;color:var(--body);cursor:pointer">خروج</button><a href="finance.html" style="font-family:inherit;font-size:12px;padding:6px 14px;border-radius:999px;border:1px solid var(--hair);background:#fff;color:var(--body);text-decoration:none">داشبورد مالی</a><a href="connect.html" style="font-family:inherit;font-size:12px;padding:6px 14px;border-radius:999px;border:1px solid var(--hair);background:#fff;color:var(--body);text-decoration:none">اتصال به ایجنت</a><a href="live.html" style="font-family:inherit;font-size:12px;padding:6px 14px;border-radius:999px;border:1px solid var(--hair);background:#fff;color:var(--body);text-decoration:none">دستیار جلسه</a></div>
-</header>
-
-<nav class="nav">
-  <button class="pill active" data-t="today">امروز</button>
-  <button class="pill" data-t="food">تغذیه</button>
-  <button class="pill" data-t="sleep">خواب</button>
-  <button class="pill" data-t="gym">ورزش و عضلات</button>
-  <button class="pill" data-t="body">بدن</button>
-  <button class="pill" data-t="mind">ذهن</button>
-  <button class="pill" data-t="screen">اسکرین‌تایم</button>
-  <button class="pill" data-t="adhere">پایبندی</button>
-  <button class="pill" data-t="temp">مزاج</button>
-  <button class="pill" data-t="tp2">چارت دو محوره</button>
-</nav>
-
-<!-- امروز -->
-<section class="panel active" id="today">
-  <div class="kpis">
-    <div class="kpi"><div class="lbl">کالری</div><div class="val">۱٬۸۴۰</div>
-      <div class="sub">از ۲٬۴۰۰ — ۵۶۰ باقی</div>
-      <div class="track ok"><i style="width:77%"></i></div>
-      <div class="spark" id="sp-today-kcal"></div></div>
-    <div class="kpi"><div class="lbl">پروتئین</div><div class="val">۱۱۲ <small style="font-size:13px;font-weight:500">گرم</small></div>
-      <div class="sub">از ۱۵۰ — ۳۸ باقی</div>
-      <div class="track warn"><i style="width:75%"></i></div>
-      <div class="spark" id="sp-today-prot"></div></div>
-    <div class="kpi"><div class="lbl">خواب دیشب</div><div class="val">۷:۳۰</div>
-      <div class="sub">کیفیت ۸ از ۱۰</div>
-      <div class="track ok"><i style="width:80%"></i></div>
-      <div class="spark" id="sp-today-sleep"></div></div>
-    <div class="kpi"><div class="lbl">وزن</div><div class="val">۸۰.۴ <small style="font-size:13px;font-weight:500">kg</small></div>
-      <div class="sub">کاهش ۰.۷۵ در ۱۴ روز</div>
-      <div class="track ok"><i style="width:65%"></i></div>
-      <div class="spark" id="sp-today-wt"></div></div>
-  </div>
-
-  <div class="box"><div class="hd"><b>کالری و پروتئین، ۱۴ روز</b><span>خط چین: هدف ۲٬۴۰۰ کالری</span></div>
-    <div id="c-t-kcal"></div></div>
-  <div class="box"><div class="hd"><b>خواب و کیفیت، ۱۴ روز</b><span>میله: ساعت، خط: کیفیت</span></div>
-    <div id="c-t-sleep"></div></div>
-
-  <h2>وضعیت امروز</h2>
-  <div class="tl">
-    <div class="row"><span><i class="dot" style="background:var(--ok)"></i>نماز</span><span class="r">۴ از ۵ — عشا باقی‌مانده</span></div>
-    <div class="row"><span><i class="dot" style="background:var(--ok)"></i>ورزش</span><span class="r">بدنسازی، ۵۵ دقیقه، سینه و زیربغل</span></div>
-    <div class="row"><span><i class="dot" style="background:var(--ok)"></i>تنفس عمیق</span><span class="r">انجام شد</span></div>
-    <div class="row"><span><i class="dot" style="background:var(--warn)"></i>آب</span><span class="r">۱.۸ از ۲.۵ لیتر</span></div>
-    <div class="row"><span><i class="dot" style="background:var(--ok)"></i>اسکرین‌تایم</span><span class="r">۳:۱۰ — زیر هدف</span></div>
-  </div>
-</section>
-
-<!-- تغذیه -->
-<section class="panel" id="food">
-  <div class="kpis">
-    <div class="kpi"><div class="lbl">جمع کالری</div><div class="val">۱٬۸۴۰</div></div>
-    <div class="kpi"><div class="lbl">جمع پروتئین</div><div class="val">۹۸ گرم</div></div>
-    <div class="kpi"><div class="lbl">کربوهیدرات</div><div class="val">۲۱۰ گرم</div></div>
-    <div class="kpi"><div class="lbl">چربی</div><div class="val">۶۲ گرم</div></div>
-  </div>
-  <div class="box"><div class="hd"><b>روند کالری، ۱۴ روز</b><span>هدف ۲٬۴۰۰</span></div><div id="c-f-kcal"></div></div>
-  <div class="box"><div class="hd"><b>روند پروتئین، ۱۴ روز</b><span>هدف ۱۵۰ گرم</span></div><div id="c-f-prot"></div></div>
-  <div class="box"><div class="hd"><b>تقسیم درشت‌مغذی‌ها، امروز</b><span>درصد از کل</span></div>
-    <div id="c-f-macro"></div>
-    <div class="legend"><span><i style="background:#111"></i>پروتئین</span><span><i style="background:#71717a"></i>کربوهیدرات</span><span><i style="background:#d4d4d8"></i>چربی</span></div>
-  </div>
-  <h2>وعده‌های امروز</h2>
-  <div class="tw"><table>
-    <thead><tr><th>وعده</th><th>غذا</th><th>مقدار</th><th>کالری</th><th>پروتئین</th></tr></thead>
-    <tbody>
-      <tr><td>صبحانه</td><td>نان سنگک، پنیر، گردو</td><td>۲ برش</td><td>۴۲۰</td><td>۱۸</td></tr>
-      <tr><td>میان‌وعده</td><td>خرما و چای</td><td>۳ عدد</td><td>۱۸۰</td><td>۲</td></tr>
-      <tr><td>ناهار</td><td>برنج و مرغ</td><td>۱۰ قاشق، ۱ ران</td><td>۷۸۰</td><td>۵۵</td></tr>
-      <tr><td>عصرانه</td><td>میوه فصل</td><td>۱ کاسه</td><td>۱۴۰</td><td>۲</td></tr>
-      <tr><td>شام</td><td>املت</td><td>۳ تخم‌مرغ</td><td>۳۲۰</td><td>۲۱</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<!-- خواب -->
-<section class="panel" id="sleep">
-  <div class="kpis">
-    <div class="kpi"><div class="lbl">میانگین ۷ روز</div><div class="val">۷:۱۲</div>
-      <div class="track warn"><i style="width:72%"></i></div></div>
-    <div class="kpi"><div class="lbl">کیفیت میانگین</div><div class="val">۷.۱</div></div>
-    <div class="kpi"><div class="lbl">بیداری شبانه</div><div class="val">۱.۲</div></div>
-    <div class="kpi"><div class="lbl">چرت روزانه</div><div class="val">۲۵ <small style="font-size:13px;font-weight:500">دقیقه</small></div></div>
-  </div>
-  <div class="box"><div class="hd"><b>ساعت خواب و کیفیت، ۱۴ روز</b><span>میله: ساعت، خط سبز: کیفیت</span></div>
-    <div id="c-s-main"></div>
-    <div class="legend"><span><i style="background:#111"></i>ساعت خواب</span><span><i style="background:#16a34a"></i>کیفیت از ۱۰</span></div>
-  </div>
-  <div class="box"><div class="hd"><b>ساعت خواب‌رفتن، ۱۴ روز</b><span>هرچه بالاتر، دیرتر</span></div><div id="c-s-when"></div></div>
-  <h2>هفت روز گذشته</h2>
-  <div class="tw"><table>
-    <thead><tr><th>تاریخ</th><th>خواب</th><th>بیداری</th><th>ساعت</th><th>کیفیت</th></tr></thead>
-    <tbody>
-      <tr><td>۰۷/۰۸</td><td>۰۰:۱۵</td><td>۰۷:۴۵</td><td>۷:۳۰</td><td>۸</td></tr>
-      <tr><td>۰۷/۰۷</td><td>۰۱:۰۰</td><td>۰۷:۳۰</td><td>۶:۳۰</td><td>۶</td></tr>
-      <tr><td>۰۷/۰۶</td><td>۲۳:۴۵</td><td>۰۷:۱۵</td><td>۷:۳۰</td><td>۸</td></tr>
-      <tr><td>۰۷/۰۵</td><td>۰۱:۳۰</td><td>۰۸:۰۰</td><td>۶:۳۰</td><td>۵</td></tr>
-      <tr><td>۰۷/۰۴</td><td>۰۰:۰۰</td><td>۰۷:۳۰</td><td>۷:۳۰</td><td>۷</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<!-- ورزش -->
-<section class="panel" id="gym">
-  <div class="kpis">
-    <div class="kpi"><div class="lbl">جلسات این هفته</div><div class="val">۳</div></div>
-    <div class="kpi"><div class="lbl">مجموع دقیقه</div><div class="val">۱۶۵</div></div>
-    <div class="kpi"><div class="lbl">کالری سوخته</div><div class="val">۱٬۲۴۰</div></div>
-    <div class="kpi"><div class="lbl">استریک</div><div class="val">۵ <small style="font-size:13px;font-weight:500">روز</small></div></div>
-  </div>
-  <h2>نقشه عضلات</h2>
-  <div class="box">
-    <div class="mapwrap">
-      <svg id="mf" viewBox="40 70 1270 1290"></svg>
-      <svg id="mb" viewBox="80 190 1300 1220"></svg>
+  <header class="page-head">
+    <div>
+      <div class="eyebrow t-health"><i></i><span id="hDate">سلامت</span></div>
+      <h1 id="hTitle">داشبورد سلامت</h1>
+      <p id="hSub">تغذیه، خواب، ورزش، بدن، ذهن و عادت‌ها در یک نگاه</p>
     </div>
-    <div class="legend" style="justify-content:center">
-      <span><i style="background:#dc2626"></i>تازه تمرین، ریکاوری نشده</span>
-      <span><i style="background:#d97706"></i>در حال ریکاوری</span>
-      <span><i style="background:#16a34a"></i>ریکاوری کامل (بدون تمرین تازه)</span>
+    <div class="page-actions">
+      <div class="segmented" id="range" role="group" aria-label="بازه زمانی">
+        <button type="button" data-days="7" aria-pressed="false">۷ روز</button>
+        <button type="button" data-days="14" aria-pressed="true">۱۴ روز</button>
+        <button type="button" data-days="30" aria-pressed="false">۳۰ روز</button>
+        <button type="button" data-days="90" aria-pressed="false">۹۰ روز</button>
+      </div>
+      <button class="icon-btn" type="button" id="btnExport" title="دانلود CSV" aria-label="دانلود داده‌های بازه به‌صورت CSV"></button>
+      <button class="btn btn-primary t-health" type="button" id="btnLog"></button>
     </div>
-    <div id="md">روی هر عضله بزن تا آخرین تمرینش را ببینی.</div>
-  </div>
-  <div class="box"><div class="hd"><b>حجم تمرین به تفکیک گروه عضلانی</b><span>مجموع تکرار، این هفته</span></div>
-    <div id="c-g-vol"></div></div>
-  <div class="box"><div class="hd"><b>کالری سوخته، ۱۴ روز</b><span>میله‌ای</span></div><div id="c-g-kcal"></div></div>
-  <h2>جلسات اخیر</h2>
-  <div class="tw"><table>
-    <thead><tr><th>تاریخ</th><th>نوع</th><th>مدت</th><th>حرکات</th><th>عضلات</th></tr></thead>
-    <tbody>
-      <tr><td>۰۷/۰۸</td><td>بدنسازی</td><td>۵۵ دقیقه</td><td>پرس سینه ۴×۱۰، لت ۴×۱۰</td><td>سینه، زیربغل</td></tr>
-      <tr><td>۰۷/۰۶</td><td>والیبال</td><td>۶۰ دقیقه</td><td>—</td><td>پا، شکم</td></tr>
-      <tr><td>۰۷/۰۴</td><td>بدنسازی</td><td>۵۰ دقیقه</td><td>اسکوات ۴×۸، ددلیفت ۳×۶</td><td>پا، پشت</td></tr>
-    </tbody>
-  </table></div>
-</section>
+  </header>
 
-<!-- بدن -->
-<section class="panel" id="body">
-  <div class="kpis">
-    <div class="kpi"><div class="lbl">وزن</div><div class="val">۸۰.۴</div><div class="sub">۱۴ روز پیش ۸۱.۱۵</div></div>
-    <div class="kpi"><div class="lbl">چربی بدن</div><div class="val">۱۹.۶٪</div><div class="sub">۱۴ روز پیش ۲۰.۲٪</div></div>
-    <div class="kpi"><div class="lbl">چربی احشایی</div><div class="val">۸</div><div class="sub">سطح ایمن</div></div>
-    <div class="kpi"><div class="lbl">عضله اسکلتی</div><div class="val">۳۴.۸ <small style="font-size:13px;font-weight:500">kg</small></div></div>
-    <div class="kpi"><div class="lbl">آب بدن</div><div class="val">۵۶.۴٪</div></div>
-    <div class="kpi"><div class="lbl">شاخص توده بدنی</div><div class="val">۲۵.۱</div></div>
-  </div>
-  <div class="box"><div class="hd"><b>روند وزن، ۳۰ روز</b><span>هدف ۷۳ کیلوگرم</span></div><div id="c-b-wt"></div></div>
-  <div class="box"><div class="hd"><b>چربی بدن و عضله اسکلتی، ۳۰ روز</b><span>درصد و کیلوگرم</span></div>
-    <div id="c-b-comp"></div>
-    <div class="legend"><span><i style="background:#d97706"></i>چربی بدن ٪</span><span><i style="background:#16a34a"></i>عضله اسکلتی kg</span></div>
-  </div>
-  <div class="box"><div class="hd"><b>چربی احشایی، ۳۰ روز</b><span>خط قرمز: آستانه خطر ۱۲</span></div><div id="c-b-vis"></div></div>
-</section>
+  <nav class="tabs" role="tablist" aria-label="بخش‌های سلامت" id="tabs">
+    <button class="tab" role="tab" data-t="today" aria-selected="true">امروز</button>
+    <button class="tab" role="tab" data-t="food" aria-selected="false">تغذیه</button>
+    <button class="tab" role="tab" data-t="sleep" aria-selected="false">خواب</button>
+    <button class="tab" role="tab" data-t="gym" aria-selected="false">ورزش</button>
+    <button class="tab" role="tab" data-t="body" aria-selected="false">بدن</button>
+    <button class="tab" role="tab" data-t="mind" aria-selected="false">ذهن</button>
+    <button class="tab" role="tab" data-t="screen" aria-selected="false">اسکرین‌تایم</button>
+    <button class="tab" role="tab" data-t="adhere" aria-selected="false">پایبندی</button>
+    <button class="tab" role="tab" data-t="temp" aria-selected="false">مزاج</button>
+  </nav>
 
-<!-- ذهن -->
-<section class="panel" id="mind">
-  <div class="kpis">
-    <div class="kpi"><div class="lbl">خلق امروز</div><div class="val">۷</div><div class="track ok"><i style="width:70%"></i></div></div>
-    <div class="kpi"><div class="lbl">استرس</div><div class="val">۴</div><div class="track warn"><i style="width:40%"></i></div></div>
-    <div class="kpi"><div class="lbl">انرژی</div><div class="val">۸</div><div class="track ok"><i style="width:80%"></i></div></div>
-    <div class="kpi"><div class="lbl">نماز این هفته</div><div class="val">۳۱ <small style="font-size:13px;font-weight:500">از ۳۵</small></div></div>
-  </div>
-  <div class="box"><div class="hd"><b>خلق، استرس و انرژی، ۱۴ روز</b><span>سه سری</span></div>
-    <div id="c-m-trend"></div>
-    <div class="legend"><span><i style="background:#111"></i>خلق</span><span><i style="background:#d97706"></i>استرس</span><span><i style="background:#16a34a"></i>انرژی</span></div>
-  </div>
-  <div class="box"><div class="hd"><b>همبستگی نماز و خلق</b><span>هر نقطه یک روز</span></div>
-    <div id="c-m-scatter"></div></div>
-</section>
-
-<!-- اسکرین‌تایم -->
-<section class="panel" id="screen">
-  <div class="kpis">
-    <div class="kpi"><div class="lbl">کل امروز</div><div class="val">۳:۱۰</div><div class="sub">هدف زیر ۴ ساعت</div>
-      <div class="track ok"><i style="width:79%"></i></div></div>
-    <div class="kpi"><div class="lbl">اینستاگرام</div><div class="val">۱:۰۵</div><div class="sub">هدف زیر ۱:۳۰</div>
-      <div class="track ok"><i style="width:72%"></i></div></div>
-    <div class="kpi"><div class="lbl">تلگرام</div><div class="val">۰:۵۰</div></div>
-    <div class="kpi"><div class="lbl">آنلاک</div><div class="val">۶۲</div></div>
-    <div class="kpi"><div class="lbl">نوتیفیکیشن</div><div class="val">۱۴۸</div></div>
-  </div>
-  <div class="box"><div class="hd"><b>اسکرین‌تایم انباشته، ۱۴ روز</b><span>خط قرمز: هدف ۴ ساعت</span></div>
-    <div id="c-sc-stack"></div>
-    <div class="legend"><span><i style="background:#111"></i>اینستاگرام</span><span><i style="background:#71717a"></i>تلگرام</span><span><i style="background:#d4d4d8"></i>سایر</span></div>
-  </div>
-  <div class="box"><div class="hd"><b>اینستاگرام در برابر هدف</b><span>هدف ۱:۳۰</span></div><div id="c-sc-ig"></div></div>
-  <div class="box"><div class="hd"><b>آنلاک و نوتیفیکیشن، ۱۴ روز</b><span>دو سری</span></div>
-    <div id="c-sc-un"></div>
-    <div class="legend"><span><i style="background:#111"></i>آنلاک</span><span><i style="background:#d4d4d8"></i>نوتیفیکیشن</span></div>
-  </div>
-</section>
-
-<!-- پایبندی -->
-<section class="panel" id="adhere">
-  <div class="note">این تب حلقه‌ای است که در سند نسخه ۰.۱ گم شده بود: سنجش اینکه توصیه‌ها اثر داشته‌اند یا نه.</div>
-  <div class="kpis">
-    <div class="kpi"><div class="lbl">پایبندی این هفته</div><div class="val">۷۸٪</div>
-      <div class="track ok"><i style="width:78%"></i></div></div>
-    <div class="kpi"><div class="lbl">هفته پیش</div><div class="val">۷۱٪</div></div>
-    <div class="kpi"><div class="lbl">قوی‌ترین شاخص</div><div class="val" style="font-size:17px">خواب</div></div>
-    <div class="kpi"><div class="lbl">ضعیف‌ترین شاخص</div><div class="val" style="font-size:17px">آب</div></div>
-  </div>
-  <div class="box"><div class="hd"><b>هیتمپ پایبندی، ۱۴ روز</b><span>پررنگ‌تر: پایبندی بیشتر</span></div>
-    <div id="c-ad-heat"></div></div>
-  <div class="box"><div class="hd"><b>امتیاز روزانه ترکیبی، ۱۴ روز</b><span>از ۱۰۰ — خط هدف ۷۵</span></div>
-    <div id="c-ad-score"></div></div>
-</section>
-
-<!-- مزاج -->
-<section class="panel" id="temp">
-  <div class="note">این بخش آزمایشی است. مدل مزاج کمی‌شده اعتبار بالینی ندارد و چارچوب تصمیم‌یار است، نه تشخیص پزشکی. بردارهای پایه در حال حاضر بی‌منبع و تأییدنشده‌اند.</div>
-  <div class="box"><div class="hd"><b>صفحه مزاج دو محوره</b><span>پایه، بردار هر آیتم، جمع نهایی</span></div>
-    <div id="c-tp-plane"></div>
-    <div class="legend" style="justify-content:center">
-      <span><i style="background:#6366f1"></i>بردار هر آیتم (به ترتیب ثبت)</span>
-      <span><i style="background:#fff;border:2px solid #111"></i>مزاج پایه</span>
-      <span><i style="background:#111"></i>جمع نهایی (نقطه کنونی)</span>
-      <span><i style="background:#dcfce7"></i>ناحیه تعادل</span>
-    </div></div>
-  <div class="box"><div class="hd"><b>مسیر مزاج، ۱۴ روز</b><span>دو خط: گرمی و تری</span></div><div id="c-tp-line"></div>
-    <div class="legend" style="justify-content:center">
-      <span><i style="background:#d97706"></i>سردی و گرمی (منفی=سرد، مثبت=گرم)</span>
-      <span><i style="background:#111"></i>خشکی و تری (منفی=تر، مثبت=خشک)</span>
-    </div></div>
-  <h2>بردارهای امروز</h2>
-  <div class="tw"><table>
-    <thead><tr><th>آیتم</th><th>سردی و گرمی</th><th>خشکی و تری</th><th>منبع</th></tr></thead>
-    <tbody>
-      <tr><td>ماست، ۲ پیاله</td><td>۰.۵ سرد</td><td>۰.۳ خشک</td><td><span class="badge ok">تأییدشده</span></td></tr>
-      <tr><td>خرما، ۳ عدد</td><td>۰.۶ گرم</td><td>۰.۲ خشک</td><td><span class="badge ok">تأییدشده</span></td></tr>
-      <tr><td>کم‌خوابی دیشب</td><td>۰.۲ سرد</td><td>۰.۷ خشک</td><td><span class="badge warn">استنتاج</span></td></tr>
-      <tr><td>ورزش سنگین</td><td>۰.۵ گرم</td><td>۰.۵ خشک</td><td><span class="badge warn">استنتاج</span></td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<section class="panel" id="tp2">
-  <div class="note">هر نقطه یک روز است. محور افقی سردی و گرمی، محور عمودی تری و خشکی. رنگ و اندازه نقاط را می‌توانی به خلق، خواب یا اسکرین‌تایم وصل کنی. این چارچوب تصمیم‌یار است، نه تشخیص بالینی.</div>
-
-  <div class="box">
-    <div class="hd"><b>فیلترها</b><span>زنده</span></div>
-    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">
-      <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)">بازه
-        <select id="tp2-range" class="sel">
-          <option value="7">۷ روز</option>
-          <option value="14">۱۴ روز</option>
-          <option value="30" selected>۳۰ روز</option>
-          <option value="0">همه</option>
-        </select></label>
-      <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)">رنگ نقاط
-        <select id="tp2-color" class="sel">
-          <option value="mood">خلق</option>
-          <option value="sleep">خواب</option>
-          <option value="screen">اسکرین‌تایم</option>
-          <option value="none">تک‌رنگ</option>
-        </select></label>
-      <label style="display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)">اندازه نقاط
-        <select id="tp2-size" class="sel">
-          <option value="none">یکسان</option>
-          <option value="screen">اسکرین‌تایم</option>
-          <option value="sleep">خواب</option>
-        </select></label>
+  <!-- امروز -->
+  <section class="panel active" id="today" role="tabpanel">
+    <div class="grid g-12">
+      <div class="card span-4 score-card t-health card-glow">
+        <div class="card-head"><div><h3>امتیاز امروز</h3><p>ترکیب هدف‌های کالری، پروتئین، خواب، ورزش، نماز و اسکرین</p></div></div>
+        <div class="score-body">
+          <div id="scoreRing"></div>
+          <div class="score-meta">
+            <div class="score-verdict" id="scoreVerdict"><span class="skeleton" style="width:90px;height:20px"></span></div>
+            <div class="kpi-sub" id="scoreDelta"></div>
+            <div class="streaks" id="streaks"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card span-8 goals-card">
+        <div class="card-head"><div><h3>هدف‌های امروز</h3><p id="goalsSub">پیشرفت تا این لحظه</p></div></div>
+        <div class="goal-rings" id="goalRings"></div>
+      </div>
     </div>
-    <div id="tp2-quick" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">
-      <button class="qbtn" data-q="all">همه روزها</button>
-      <button class="qbtn" data-q="moodLow">خلق زیر ۵</button>
-      <button class="qbtn" data-q="screenHigh">اسکرین بالای ۶ ساعت</button>
-      <button class="qbtn" data-q="hot">گرم مزاج</button>
-      <button class="qbtn" data-q="dry">خشک مزاج</button>
-      <button class="qbtn" data-q="sleepLow">کم‌خواب</button>
+
+    <div class="grid g-4" id="todayKpis" style="margin-top:14px"></div>
+
+    <div class="grid g-12" style="margin-top:14px">
+      <div class="card span-8">
+        <div class="card-head"><div><h3>کالری روزانه</h3><p>در برابر هدف</p></div></div>
+        <div id="cTodayKcal"></div>
+      </div>
+      <div class="card span-4 t-info">
+        <div class="card-head"><div><h3>بینش‌ها</h3><p>از داده‌های همین بازه</p></div><span class="kpi-icon" id="insIcon"></span></div>
+        <ul class="insights" id="insights"></ul>
+      </div>
+      <div class="card span-7">
+        <div class="card-head"><div><h3>خواب و کیفیت</h3><p>میله: ساعت خواب — خط‌چین: کیفیت از ۱۰</p></div></div>
+        <div id="cTodaySleep"></div>
+        <div class="legend"><span><i style="background:var(--c4)"></i>ساعت خواب</span><span><i class="dashed" style="color:var(--c2)"></i>کیفیت</span><span><i class="dashed" style="color:var(--bad)"></i>هدف</span></div>
+      </div>
+      <div class="card span-5">
+        <div class="card-head"><div><h3>چک‌لیست امروز</h3><p id="checkSub"></p></div></div>
+        <div id="checklist" class="list"></div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="box">
-    <div class="hd"><b>نمودار دو محوره</b><span id="tp2-cnt">۰ نقطه</span></div>
-    <svg id="tp2-plot" viewBox="0 0 960 430" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto"></svg>
-    <div class="legend" style="justify-content:center">
-      <span><i style="background:var(--ok)"></i>وضعیت خوب</span>
-      <span><i style="background:var(--warn)"></i>مرزی</span>
-      <span><i style="background:var(--bad)"></i>نامطلوب</span>
-      <span><i style="background:var(--muted)"></i>بدون داده</span>
+  <!-- تغذیه -->
+  <section class="panel" id="food" role="tabpanel">
+    <div class="grid g-4" id="foodKpis"></div>
+    <div class="grid g-12" style="margin-top:14px">
+      <div class="card span-8"><div class="card-head"><div><h3>روند کالری</h3><p>خط‌چین قرمز: هدف</p></div></div><div id="cFoodKcal"></div></div>
+      <div class="card span-4"><div class="card-head"><div><h3>درشت‌مغذی‌های امروز</h3><p>سهم از کالری</p></div></div><div id="cMacro"></div></div>
+      <div class="card span-6"><div class="card-head"><div><h3>پروتئین روزانه</h3><p>گرم، در برابر هدف</p></div></div><div id="cFoodProt"></div></div>
+      <div class="card span-6"><div class="card-head"><div><h3>ترکیب درشت‌مغذی‌ها</h3><p>گرم در روز</p></div></div><div id="cFoodMacroStack"></div>
+        <div class="legend"><span><i style="background:var(--c2)"></i>پروتئین</span><span><i style="background:var(--c1)"></i>کربوهیدرات</span><span><i style="background:var(--c3)"></i>چربی</span></div></div>
     </div>
-  </div>
+    <div class="section-title"><h2>وعده‌های امروز</h2><span id="mealsSub"></span></div>
+    <div class="card"><div class="table-wrap" id="mealsTable"></div></div>
+  </section>
 
-  <div class="box">
-    <div class="hd"><b>خلاصه فیلتر فعلی</b><span id="tp2-lbl"></span></div>
-    <div class="tw"><table>
-      <tbody>
-        <tr><td>تعداد روزها</td><td id="tp2-sN">۰</td></tr>
-        <tr><td>میانگین گرمی</td><td id="tp2-sCw">—</td></tr>
-        <tr><td>میانگین خشکی</td><td id="tp2-sDw">—</td></tr>
-        <tr><td>میانگین خلق</td><td id="tp2-sMood">—</td></tr>
-        <tr><td>میانگین خواب</td><td id="tp2-sSleep">—</td></tr>
-        <tr><td>میانگین اسکرین</td><td id="tp2-sScreen">—</td></tr>
-      </tbody>
-    </table></div>
-  </div>
-</section>
+  <!-- خواب -->
+  <section class="panel" id="sleep" role="tabpanel">
+    <div class="grid g-4" id="sleepKpis"></div>
+    <div class="grid g-12" style="margin-top:14px">
+      <div class="card span-8"><div class="card-head"><div><h3>ساعت خواب و کیفیت</h3><p>میله: ساعت — خط‌چین: کیفیت</p></div></div><div id="cSleepMain"></div></div>
+      <div class="card span-4"><div class="card-head"><div><h3>ساعت به خواب رفتن</h3><p>ثبات زمان خواب مهم‌تر از مدت آن است</p></div></div><div id="cBedtime"></div></div>
+    </div>
+    <div class="section-title"><h2>شب‌های اخیر</h2><span>۱۴ ثبت آخر</span></div>
+    <div class="card"><div class="table-wrap" id="sleepTable"></div></div>
+  </section>
 
-<div class="foot">نسخه ۴ — احسان، ایجنت توسعه پلتفرم سلامت</div>
+  <!-- ورزش -->
+  <section class="panel" id="gym" role="tabpanel">
+    <div class="grid g-4" id="gymKpis"></div>
+    <div class="grid g-12" style="margin-top:14px">
+      <div class="card span-7">
+        <div class="card-head"><div><h3>نقشه ریکاوری عضلات</h3><p>روی هر عضله بزن تا آخرین تمرینش را ببینی</p></div></div>
+        <div class="mapwrap">
+          <figure><svg id="mf" viewBox="40 70 1270 1290" role="img" aria-label="نمای جلوی بدن"></svg><figcaption>جلو</figcaption></figure>
+          <figure><svg id="mb" viewBox="80 190 1300 1220" role="img" aria-label="نمای پشت بدن"></svg><figcaption>پشت</figcaption></figure>
+        </div>
+        <div class="legend rec-legend" style="justify-content:center"></div>
+        <div id="md" class="callout t-health" aria-live="polite"></div>
+      </div>
+      <div class="card span-5">
+        <div class="card-head"><div><h3>حجم تمرین هر عضله</h3><p>تعداد دفعات تمرین ثبت‌شده</p></div></div>
+        <div id="volBars" class="hbars"></div>
+      </div>
+      <div class="card span-12"><div class="card-head"><div><h3>دقیقه تمرین و کالری سوخته</h3><p>دقیقه تمرین در روز؛ کالری در راهنمای شناور</p></div></div><div id="cGym"></div></div>
+    </div>
+    <div class="section-title"><h2>جلسات اخیر</h2><span>۱۰ جلسه آخر</span></div>
+    <div class="card"><div class="table-wrap" id="gymTable"></div></div>
+  </section>
 
+  <!-- بدن -->
+  <section class="panel" id="body" role="tabpanel">
+    <div class="grid g-3" id="bodyKpis"></div>
+    <div class="grid g-12" style="margin-top:14px">
+      <div class="card span-12"><div class="card-head"><div><h3>روند وزن</h3><p id="wtSub">کیلوگرم</p></div></div><div id="cWeight"></div></div>
+      <div class="card span-7"><div class="card-head"><div><h3>درصد چربی و عضله</h3><p>ترکیب بدن</p></div></div><div id="cComp"></div>
+        <div class="legend"><span><i style="background:var(--c3)"></i>چربی بدن ٪</span><span><i class="dashed" style="color:var(--c2)"></i>عضله ٪</span></div></div>
+      <div class="card span-5"><div class="card-head"><div><h3>چربی احشایی</h3><p>خط‌چین قرمز: آستانه خطر ۱۲</p></div></div><div id="cVisceral"></div></div>
+    </div>
+  </section>
+
+  <!-- ذهن -->
+  <section class="panel" id="mind" role="tabpanel">
+    <div class="grid g-4" id="mindKpis"></div>
+    <div class="grid g-12" style="margin-top:14px">
+      <div class="card span-12"><div class="card-head"><div><h3>خلق، استرس و انرژی</h3><p>هر کدام از ۱۰</p></div></div><div id="cMind"></div>
+        <div class="legend"><span><i style="background:var(--c4)"></i>خلق</span><span><i class="dashed" style="color:var(--c5)"></i>استرس</span><span><i class="dashed" style="color:var(--c3)"></i>انرژی</span></div></div>
+      <div class="card span-6"><div class="card-head"><div><h3>خواب و خلق</h3><p>هر نقطه یک روز — خط‌چین: روند</p></div></div><div id="cSleepMood"></div></div>
+      <div class="card span-6"><div class="card-head"><div><h3>نمازهای خوانده‌شده</h3><p>از ۵ در هر روز</p></div></div><div id="cPrayer"></div></div>
+    </div>
+  </section>
+
+  <!-- اسکرین‌تایم -->
+  <section class="panel" id="screen" role="tabpanel">
+    <div class="grid g-4" id="screenKpis"></div>
+    <div class="grid g-12" style="margin-top:14px">
+      <div class="card span-12"><div class="card-head"><div><h3>اسکرین‌تایم روزانه</h3><p>دقیقه — خط‌چین قرمز: هدف</p></div></div><div id="cScreen"></div>
+        <div class="legend"><span><i style="background:var(--c5)"></i>اینستاگرام</span><span><i style="background:var(--c1)"></i>تلگرام</span><span><i style="background:var(--c6)"></i>سایر</span></div></div>
+      <div class="card span-6"><div class="card-head"><div><h3>اینستاگرام در برابر هدف</h3><p>دقیقه</p></div></div><div id="cInsta"></div></div>
+      <div class="card span-6"><div class="card-head"><div><h3>باز کردن قفل و اعلان‌ها</h3><p>تعداد در روز</p></div></div><div id="cUnlock"></div>
+        <div class="legend"><span><i style="background:var(--c1)"></i>باز کردن قفل</span><span><i class="dashed" style="color:var(--c3)"></i>اعلان</span></div></div>
+    </div>
+  </section>
+
+  <!-- پایبندی -->
+  <section class="panel" id="adhere" role="tabpanel">
+    <div class="grid g-4" id="adhKpis"></div>
+    <div class="grid g-12" style="margin-top:14px">
+      <div class="card span-12"><div class="card-head"><div><h3>نقشه پایبندی</h3><p>هر خانه یک روز؛ پررنگ‌تر یعنی نزدیک‌تر به هدف</p></div></div><div id="heat" class="heat"></div></div>
+      <div class="card span-12"><div class="card-head"><div><h3>امتیاز روزانه</h3><p>از ۱۰۰ — خط‌چین: هدف ۷۵</p></div></div><div id="cScore"></div></div>
+    </div>
+  </section>
+
+  <!-- مزاج -->
+  <section class="panel" id="temp" role="tabpanel">
+    <div class="callout t-warn" style="margin-bottom:14px"><span id="tempWarnIcon"></span><span>این بخش آزمایشی است. مدل مزاج کمی‌شده اعتبار بالینی ندارد و چارچوب تصمیم‌یار است، نه تشخیص پزشکی. بردارهای پایه هنوز منبع‌دار و تأییدشده نیستند.</span></div>
+    <div class="grid g-4" id="tempKpis"></div>
+    <div class="grid g-12" style="margin-top:14px">
+      <div class="card span-6"><div class="card-head"><div><h3>صفحه مزاج امروز</h3><p>از مزاج پایه، با بردار هر قلم، تا نقطه کنونی</p></div></div><div id="cPlane" class="chart"></div></div>
+      <div class="card span-6">
+        <div class="card-head"><div><h3>روزها روی صفحه مزاج</h3><p>هر نقطه یک روز؛ رنگ بر اساس</p></div>
+          <div class="segmented" id="tpColor" role="group" aria-label="رنگ نقاط">
+            <button type="button" data-c="mood" aria-pressed="true">خلق</button>
+            <button type="button" data-c="sleep" aria-pressed="false">خواب</button>
+            <button type="button" data-c="screen" aria-pressed="false">اسکرین</button>
+          </div></div>
+        <div id="cTempDays"></div>
+        <div class="legend"><span><i style="background:var(--ok)"></i>خوب</span><span><i style="background:var(--warn)"></i>مرزی</span><span><i style="background:var(--bad)"></i>نامطلوب</span><span><i style="background:var(--faint)"></i>بدون داده</span></div>
+      </div>
+      <div class="card span-12"><div class="card-head"><div><h3>مسیر مزاج</h3><p>منفی: سرد / تر — مثبت: گرم / خشک</p></div></div><div id="cTempLine"></div>
+        <div class="legend"><span><i style="background:var(--c3)"></i>سردی / گرمی</span><span><i class="dashed" style="color:var(--c1)"></i>تری / خشکی</span></div></div>
+    </div>
+    <div class="section-title"><h2>بردار اقلام امروز</h2><span id="tempItemsSub"></span></div>
+    <div class="card"><div class="table-wrap" id="tempTable"></div></div>
+  </section>
+
+</main>
+</div>
+
+<!-- ثبت سریع -->
+<dialog class="sheet" id="logSheet" aria-labelledby="logTitle">
+  <form method="dialog" id="logForm">
+    <div class="sheet-head"><h3 id="logTitle">ثبت سریع امروز</h3><button class="icon-btn" type="button" id="logClose" aria-label="بستن"></button></div>
+    <div class="sheet-body">
+      <div class="field">
+        <label for="fWater">آب نوشیده‌شده (لیتر)</label>
+        <div class="stepper"><button type="button" class="btn btn-ghost btn-sm" data-step="-0.25" aria-label="کم کردن">−</button>
+          <input class="input num" id="fWater" type="number" min="0" max="10" step="0.25" inputmode="decimal">
+          <button type="button" class="btn btn-ghost btn-sm" data-step="0.25" aria-label="اضافه کردن">+</button></div>
+      </div>
+      <div class="grid g-3 sliders">
+        <div class="field"><label for="fMood">خلق <output id="oMood"></output></label><input id="fMood" type="range" min="0" max="10" step="1"></div>
+        <div class="field"><label for="fStress">استرس <output id="oStress"></output></label><input id="fStress" type="range" min="0" max="10" step="1"></div>
+        <div class="field"><label for="fEnergy">انرژی <output id="oEnergy"></output></label><input id="fEnergy" type="range" min="0" max="10" step="1"></div>
+      </div>
+      <div class="grid g-2">
+        <div class="field"><label for="fSleep">خواب دیشب (ساعت)</label><input class="input num" id="fSleep" type="number" min="0" max="24" step="0.25" inputmode="decimal"></div>
+        <div class="field"><label for="fSleepQ">کیفیت خواب (۰ تا ۱۰)</label><input class="input num" id="fSleepQ" type="number" min="0" max="10" step="1" inputmode="numeric"></div>
+      </div>
+      <div class="field"><span class="label">نمازهای امروز</span><div class="prayer-toggles" id="fPrayers"></div></div>
+    </div>
+    <div class="sheet-foot"><button class="btn btn-primary t-health" type="submit" id="logSave">ذخیره</button><button class="btn btn-ghost" type="button" id="logCancel">انصراف</button></div>
+  </form>
+</dialog>
+
+<script src="config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/body-paths.js"></script>
 <script src="js/dashboard.js"></script>
-<script src="shell.js" defer></script>
+<script src="shell.js"></script>
 </body>
 </html>

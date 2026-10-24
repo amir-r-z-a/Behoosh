@@ -17,7 +17,7 @@ from app.db.finance_models import (
     FinAccount, FinAudit, FinBudget, FinCategory, FinEntry, FinLiability,
     FinRawMessage, FinTransaction,
 )
-from app.services.jalali import (parse_date, to_jalali_str, gregorian_to_jalali,
+from app.services.jalali import (parse_date, to_jalali_str, gregorian_to_jalali, month_bounds_jalali,
                                      jalali_to_gregorian)
 
 
@@ -215,6 +215,40 @@ def log_transaction(db: Session, user_id, *, occurred_at, amount: float, directi
             "amount": amount, "direction": direction, "account": acc.name}
 
 
+_REAL_ACCOUNT_TYPES = ("asset", "liability")
+
+
+def user_view(entries: list[tuple]) -> dict:
+    """یک تراکنش دوسطری را از دید کاربر توصیف می‌کند.
+
+    entries: [(direction, amount, account_type, account_name), ...]
+    سطر حساب اصلی جهت معکوس جهت کاربر را دارد (log_transaction را ببین)، پس
+    جهت کاربر از سطر روی حساب واقعی (دارایی/بدهی) خوانده می‌شود. اگر هر دو
+    سطر واقعی باشند (انتقال)، حساب مبدا همان سطر بستانکار است.
+    """
+    real = [e for e in entries if e[2] in _REAL_ACCOUNT_TYPES]
+    other = [e for e in entries if e[2] not in _REAL_ACCOUNT_TYPES]
+    if len(real) >= 2:
+        primary = next((e for e in real if e[0] == "credit"), real[0])
+        counter = next((e for e in real if e is not primary), None)
+    elif real:
+        primary, counter = real[0], (other[0] if other else None)
+    else:
+        primary, counter = (entries[0] if entries else None), None
+    if primary is None:
+        return {"direction": None, "kind": None, "amount": 0.0,
+                "account": None, "counter_account": None}
+    direction = "debit" if primary[0] == "credit" else "credit"
+    if counter is not None and counter[2] in ("income", "expense"):
+        kind = counter[2]
+    elif counter is not None and counter[2] in _REAL_ACCOUNT_TYPES:
+        kind = "transfer"
+    else:
+        kind = "expense" if direction == "debit" else "income"
+    return {"direction": direction, "kind": kind, "amount": float(primary[1]),
+            "account": primary[3], "counter_account": counter[3] if counter else None}
+
+
 def log_sms(db: Session, user_id, *, body: str, received_at=None, bank: str | None = None,
             parsed: dict | None = None, token_id=None) -> dict:
     """پیامک خام بانک را ذخیره می‌کند. اگر parsed بدهی، تراکنش هم می‌سازد.
@@ -304,6 +338,20 @@ def summary(db: Session, user_id, start, end) -> dict:
         "by_category": [{"category": k, "amount": round(v, 2)}
                         for k, v in sorted(by_cat.items(), key=lambda x: -x[1])],
     }
+
+
+def cashflow(db: Session, user_id, months: int = 6, today: date | None = None) -> list[dict]:
+    """درآمد و هزینه هر ماه شمسی، از قدیم به جدید. ماه جاری تا امروز است."""
+    cur = today or date.today()
+    out = []
+    for _ in range(max(1, min(months, 24))):
+        start, end = month_bounds_jalali(cur)
+        s = summary(db, user_id, start, min(end, today or date.today()))
+        jy, jm, _jd = gregorian_to_jalali(start)
+        out.append({"month": f"{jy:04d}/{jm:02d}", "from": start.isoformat(),
+                    "income": s["income"], "expense": s["expense"], "net": s["net"]})
+        cur = start - timedelta(days=1)
+    return list(reversed(out))
 
 
 def budget_status(db: Session, user_id, start, end) -> list[dict]:

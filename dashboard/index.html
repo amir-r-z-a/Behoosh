@@ -1,198 +1,188 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
+<script src="js/theme.js"></script>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>بهوش — یک پلتفرم، دو بال</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23111'/%3E%3Ctext x='16' y='22' font-size='17' font-family='sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3E%D8%A8%3C/text%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بهوش — دستیار شخصی سلامت و مالی</title>
+<meta name="description" content="بهوش سلامت، مالی و جلسه‌هایت را کنار هم نگه می‌دارد. با ایجنت حرف می‌زنی و خودش ثبت، دسته‌بندی و تحلیل می‌کند.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2310B981'/%3E%3Cstop offset='.55' stop-color='%232563EB'/%3E%3Cstop offset='1' stop-color='%237C3AED'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-size='17' font-family='sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3E%D8%A8%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
 <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
+<a class="skip" href="#main">رفتن به محتوا</a>
 
-<header class="top">
-  <div class="wrap">
-    <div class="logo"><span class="dot">ب</span> بهوش</div>
-    <nav data-shell-hide>
-      <a href="#health">سلامتی</a>
-      <a href="#money">مالی</a>
+<header class="lp-top">
+  <div class="lp-wrap lp-bar">
+    <a class="brand" href="index.html"><span class="brand-mark">ب</span><span>بهوش</span></a>
+    <nav class="lp-nav" aria-label="بخش‌های صفحه">
+      <a href="#modules">بخش‌ها</a>
       <a href="#how">چطور کار می‌کند</a>
-      <a href="#why">چرا</a>
+      <a href="#why">چرا بهوش</a>
     </nav>
-    <a class="btn dark" data-shell-hide href="/dashboard.html">ورود به داشبورد</a>
+    <div class="lp-actions">
+      <button class="icon-btn" type="button" data-theme-toggle></button>
+      <a class="btn btn-primary" data-cta href="login.html"><span data-cta-label>ورود</span><span data-icon="arrowLeft"></span></a>
+    </div>
   </div>
 </header>
 
-<div class="hero">
-  <div class="wrap">
-    <div class="badge"><i></i> سلامت و مالی، در یک جا</div>
-    <h1>یک پلتفرم، <em>دو بال</em></h1>
-    <p class="lede">
-      بهوش سلامت و مالی‌ات را کنار هم نگه می‌دارد. فرم پر نمی‌کنی؛
-      با ایجنت حرف می‌زنی و خودش ثبت، دسته‌بندی و تحلیل می‌کند.
-    </p>
-    <div class="cta">
-      <a class="btn dark" href="/dashboard.html">داشبورد سلامت</a>
-      <a class="btn ghost" href="#money">ابزارهای مالی</a>
-    </div>
-  </div>
-</div>
-
-<div class="wrap">
-  <div class="wings">
-
-    <div class="wing health" id="health">
-      <div class="top-row">
-        <div class="ico">🌿</div>
-        <h3>بهوش سلامتی</h3>
-        <span class="tag live">فعال</span>
-      </div>
-      <p>
-        تغذیه، خواب، تمرین، بدن، ذهن، اسکرین‌تایم و مزاج — همه در یک داشبورد
-        با نمودار و روند هفتگی.
-      </p>
-      <div class="chips">
-        <span class="chip">تغذیه</span>
-        <span class="chip">خواب</span>
-        <span class="chip">ورزش</span>
-        <span class="chip">بدن</span>
-        <span class="chip">ذهن</span>
-        <span class="chip">اسکرین‌تایم</span>
-        <span class="chip">مزاج</span>
-        <span class="chip">پایبندی</span>
-      </div>
-      <div class="foot"><b>۲۱ ابزار</b> برای ثبت و تحلیل</div>
-    </div>
-
-    <div class="wing money" id="money">
-      <div class="top-row">
-        <div class="ico">💰</div>
-        <h3>بهوش مالی</h3>
-        <span class="tag new">تازه راه افتاد</span>
-      </div>
-      <p>
-        حساب‌ها، تراکنش‌ها، بودجه و دسته‌بندی — با ثبت از پیامک بانکی
-        و ممیزی کامل تغییرات.
-      </p>
-      <div class="chips">
-        <span class="chip">حساب‌ها</span>
-        <span class="chip">تراکنش‌ها</span>
-        <span class="chip">بودجه</span>
-        <span class="chip">دسته‌بندی</span>
-        <span class="chip">پیامک بانکی</span>
-        <span class="chip">ممیزی</span>
-      </div>
-      <div class="foot"><b>۱۵ ابزار</b> برای ثبت و تحلیل</div>
-    </div>
-
-  </div>
-</div>
-
-<section id="how">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>چطور کار می‌کند</h2>
-      <p>بهوش یک اپ با فرم‌های طولانی نیست. یک ایجنت است که داده‌ات را می‌فهمد.</p>
-    </div>
-    <div class="steps">
-      <div class="step">
-        <div class="n">۱</div>
-        <b>حرف بزن</b>
-        <p>در تلگرام یا چت می‌نویسی: «ناهار چلوکباب خوردم» یا «۴۵۰ هزار تومان بنزین».</p>
-      </div>
-      <div class="step">
-        <div class="n">۲</div>
-        <b>خودش ثبت می‌کند</b>
-        <p>ایجنت داده را می‌شکند، در جای درست می‌نویسد و دسته‌بندی می‌کند.</p>
-      </div>
-      <div class="step">
-        <div class="n">۳</div>
-        <b>تحلیل می‌گیری</b>
-        <p>روند، مقایسه با هدف، و هشدار وقتی از مسیر خارج می‌شوی.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="why">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>چرا بهوش</h2>
-      <p>ساخته شده برای یک نفر، با معماری‌ای که به چند نفر هم جواب می‌دهد.</p>
-    </div>
-    <div class="why">
-      <div class="card-w">
-        <b><span>🔒</span> داده مالی و سلامت جدا</b>
-        <p>
-          دو سرویس مستقل با توکن و دسترسی جدا. توکن سلامت به مالی دسترسی ندارد
-          و برعکس — اگر یکی خراب شود، دیگری دست‌نخورده می‌ماند.
-        </p>
-      </div>
-      <div class="card-w">
-        <b><span>🧩</span> ایجنت‌محور، نه فرم‌محور</b>
-        <p>
-          هر دو بال روی پروتکل <code>MCP</code> سوارند، پس هر ایجنتی
-          (تلگرام، وب، دستیار شخصی) می‌تواند به آن‌ها وصل شود.
-        </p>
-      </div>
-      <div class="card-w">
-        <b><span>📊</span> داشبورد واقعی</b>
-        <p>
-          نقشه عضلات، نمودارهای تعاملی، روند خواب و تغذیه، و چارت دو محوره مزاج —
-          نه یک جدول خام.
-        </p>
-      </div>
-      <div class="card-w">
-        <b><span>🛠</span> مالکیت کامل داده</b>
-        <p>
-          روی سرور خودت، دیتابیس خودت. بدون قفل، بدون اشتراک اجباری،
-          با ممیزی کامل هر تغییر.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="status">
-      <h3>وضعیت سرویس‌ها</h3>
-      <div class="status-grid">
-        <div class="st">
-          <div class="k">ابزار سلامت</div>
-          <div class="v ok">۲۱</div>
-          <div class="s">فعال</div>
+<main id="main">
+  <section class="hero">
+    <div class="lp-wrap hero-grid">
+      <div class="hero-copy reveal-up">
+        <span class="hero-badge"><i></i>سلامت، مالی و جلسه — در یک جا</span>
+        <h1>یک دستیار،<br><em>همه‌ی زندگی‌ات</em> در یک نگاه</h1>
+        <p class="lede">بهوش سلامت و مالی‌ات را کنار هم نگه می‌دارد. فرم پر نمی‌کنی؛ با ایجنت حرف می‌زنی و خودش ثبت، دسته‌بندی و تحلیل می‌کند.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" data-cta href="login.html"><span data-cta-label>ورود به داشبورد</span><span data-icon="arrowLeft"></span></a>
+          <a class="btn btn-ghost btn-lg" href="#how"><span data-icon="compass"></span>ببین چطور کار می‌کند</a>
         </div>
-        <div class="st">
-          <div class="k">ابزار مالی</div>
-          <div class="v ok">۱۵</div>
-          <div class="s">فعال</div>
+        <ul class="hero-trust">
+          <li><span data-icon="shield"></span>داده روی سرور خودت</li>
+          <li><span data-icon="key"></span>توکن جدا برای هر حوزه</li>
+          <li><span data-icon="moonstar"></span>تم روشن و تیره</li>
+        </ul>
+      </div>
+
+      <div class="hero-visual reveal-up" aria-hidden="true">
+        <div class="mock">
+          <div class="mock-bar"><span></span><span></span><span></span><b>داشبورد سلامت</b></div>
+          <div class="mock-body">
+            <div class="mock-kpis">
+              <div class="mk t-health"><span class="mk-ic" data-icon="flame"></span><small>کالری امروز</small><b>۱٬۸۴۰</b>
+                <div class="progress"><i style="width:77%"></i></div></div>
+              <div class="mk t-info"><span class="mk-ic" data-icon="bed"></span><small>خواب دیشب</small><b>۷:۲۴</b>
+                <div class="progress"><i style="width:88%"></i></div></div>
+              <div class="mk t-finance"><span class="mk-ic" data-icon="wallet"></span><small>مانده ماه</small><b>۳۷٫۴ م</b>
+                <div class="progress"><i style="width:62%"></i></div></div>
+            </div>
+            <div class="mock-chart">
+              <div class="mc-head"><b>روند ۱۴ روز</b><span class="delta up"><span data-icon="trend-up"></span>۱۲٪</span></div>
+              <svg viewBox="0 0 320 110" preserveAspectRatio="none">
+                <defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--c2)" stop-opacity=".35"/><stop offset="1" stop-color="var(--c2)" stop-opacity="0"/></linearGradient></defs>
+                <path d="M0,80 C20,70 35,72 55,60 S90,40 110,52 150,70 170,48 210,22 230,34 270,50 290,30 310,20 320,18 L320,110 L0,110Z" fill="url(#mg)"/>
+                <path d="M0,80 C20,70 35,72 55,60 S90,40 110,52 150,70 170,48 210,22 230,34 270,50 290,30 310,20 320,18" fill="none" stroke="var(--c2)" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M0,92 C30,88 60,84 90,86 S150,74 180,78 240,66 270,70 310,58 320,56" fill="none" stroke="var(--c1)" stroke-width="2" stroke-dasharray="5 5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="mock-chat">
+              <div class="bubble me">ناهار چلوکباب خوردم، با دوغ</div>
+              <div class="bubble bot"><span data-icon="sparkles"></span><span>ثبت شد: ۸۵۰ کالری، ۴۲ گرم پروتئین. تا هدف امروز ۵۶۰ کالری مانده.</span></div>
+            </div>
+          </div>
         </div>
-        <div class="st">
-          <div class="k">نقطه پایانی API</div>
-          <div class="v">۴۰</div>
-          <div class="s">سلامت + مالی + احراز هویت</div>
-        </div>
-        <div class="st">
-          <div class="k">استقرار</div>
-          <div class="v ok">خودکار</div>
-          <div class="s">با هر پوش به مخزن</div>
+        <div class="float-card fc-1 t-finance"><span class="ico" data-icon="message"></span><div><b>پیامک بانک خوانده شد</b><small>۴۵۰ هزار تومان — سوخت</small></div></div>
+        <div class="float-card fc-2 t-health"><span class="ico" data-icon="award"></span><div><b>۵ روز پیاپی</b><small>هدف پروتئین</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec" id="modules">
+    <div class="lp-wrap">
+      <div class="sec-head reveal-up">
+        <span class="kicker">سه بخش، یک پلتفرم</span>
+        <h2>هر چیزی که هر روز با آن سروکار داری</h2>
+        <p>هر بخش سرور و دسترسی جدا دارد؛ ولی همه در یک داشبورد آرام کنار هم می‌نشینند.</p>
+      </div>
+      <div class="modules">
+        <article class="module card t-health reveal-up">
+          <div class="module-top"><span class="kpi-icon" data-icon="heart"></span><span class="badge ok">فعال</span></div>
+          <h3>بهوش سلامت</h3>
+          <p>تغذیه، خواب، تمرین، بدن، ذهن، اسکرین‌تایم و مزاج — همه در یک داشبورد با نمودار، هدف و روند.</p>
+          <div class="chips"><span class="chip">تغذیه</span><span class="chip">خواب</span><span class="chip">ورزش</span><span class="chip">بدن</span><span class="chip">ذهن</span><span class="chip">مزاج</span></div>
+          <div class="module-foot"><b>۲۱ ابزار</b><span>برای ثبت و تحلیل</span><a href="dashboard.html" aria-label="داشبورد سلامت"><span data-icon="arrowLeft"></span></a></div>
+        </article>
+        <article class="module card t-finance reveal-up">
+          <div class="module-top"><span class="kpi-icon" data-icon="wallet"></span><span class="badge primary">دفتر دوطرفه</span></div>
+          <h3>بهوش مالی</h3>
+          <p>حساب‌ها، تراکنش‌ها، بودجه، وام و دسته‌بندی — با ثبت خودکار از پیامک بانکی و ممیزی کامل هر تغییر.</p>
+          <div class="chips"><span class="chip">حساب‌ها</span><span class="chip">بودجه</span><span class="chip">وام و قسط</span><span class="chip">پیامک بانکی</span><span class="chip">ممیزی</span></div>
+          <div class="module-foot"><b>۲۰ ابزار</b><span>برای ثبت و تحلیل</span><a href="finance.html" aria-label="داشبورد مالی"><span data-icon="arrowLeft"></span></a></div>
+        </article>
+        <article class="module card t-meeting reveal-up">
+          <div class="module-top"><span class="kpi-icon" data-icon="mic"></span><span class="badge info">زنده</span></div>
+          <h3>دستیار جلسه</h3>
+          <p>صدای جلسه به متن فارسی تبدیل می‌شود و ایجنت‌هایت همان وسط جلسه می‌خوانند و نظر می‌دهند.</p>
+          <div class="chips"><span class="chip">متن زنده</span><span class="chip">چند ایجنت</span><span class="chip">خلاصه</span></div>
+          <div class="module-foot"><b>۱۳ ابزار</b><span>برای جلسه</span><a href="live.html" aria-label="دستیار جلسه"><span data-icon="arrowLeft"></span></a></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec alt" id="how">
+    <div class="lp-wrap">
+      <div class="sec-head reveal-up">
+        <span class="kicker">چطور کار می‌کند</span>
+        <h2>حرف بزن؛ بقیه‌اش با بهوش</h2>
+        <p>بهوش یک اپ با فرم‌های طولانی نیست. یک ایجنت است که داده‌ات را می‌فهمد.</p>
+      </div>
+      <ol class="steps">
+        <li class="step reveal-up"><span class="step-n">۱</span><span class="step-ic t-agent" data-icon="message"></span>
+          <b>حرف بزن</b><p>در تلگرام یا چت می‌نویسی: «ناهار چلوکباب خوردم» یا «۴۵۰ هزار تومان بنزین زدم».</p></li>
+        <li class="step reveal-up"><span class="step-n">۲</span><span class="step-ic t-health" data-icon="sparkles"></span>
+          <b>خودش ثبت می‌کند</b><p>ایجنت داده را می‌شکند، در جای درست می‌نویسد و دسته‌بندی می‌کند.</p></li>
+        <li class="step reveal-up"><span class="step-n">۳</span><span class="step-ic t-finance" data-icon="chart"></span>
+          <b>تحلیل می‌گیری</b><p>روند، مقایسه با هدف، و هشدار وقتی از مسیر خارج می‌شوی.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="lp-sec" id="why">
+    <div class="lp-wrap">
+      <div class="sec-head reveal-up">
+        <span class="kicker">چرا بهوش</span>
+        <h2>ساخته شده برای آرامش، نه شلوغی</h2>
+        <p>برای یک نفر طراحی شده، با معماری‌ای که به چند نفر هم جواب می‌دهد.</p>
+      </div>
+      <div class="why">
+        <div class="why-card card t-ok reveal-up"><span class="ico" data-icon="shield"></span><div><b>داده مالی و سلامت جدا</b>
+          <p>سرویس‌ها مستقل‌اند و توکن و دسترسی جدا دارند. توکن سلامت به مالی دسترسی ندارد و برعکس.</p></div></div>
+        <div class="why-card card t-agent reveal-up"><span class="ico" data-icon="plug"></span><div><b>ایجنت‌محور، نه فرم‌محور</b>
+          <p>همه بخش‌ها روی پروتکل <span class="ltr mono">MCP</span> سوارند؛ هر ایجنتی (تلگرام، وب، دستیار شخصی) می‌تواند وصل شود.</p></div></div>
+        <div class="why-card card t-finance reveal-up"><span class="ico" data-icon="chart"></span><div><b>داشبورد واقعی</b>
+          <p>نقشه عضلات، نمودارهای تعاملی، جریان نقدی ماه به ماه و چارت دو محوره مزاج — نه یک جدول خام.</p></div></div>
+        <div class="why-card card t-info reveal-up"><span class="ico" data-icon="home"></span><div><b>مالکیت کامل داده</b>
+          <p>روی سرور خودت، دیتابیس خودت. بدون قفل و اشتراک اجباری، با ممیزی کامل هر تغییر.</p></div></div>
+      </div>
+
+      <div class="stats-band reveal-up">
+        <div><b>۵۴</b><span>ابزار برای ایجنت</span></div>
+        <div><b>۳</b><span>حوزه با دسترسی جدا</span></div>
+        <div><b>۲</b><span>تم روشن و تیره</span></div>
+        <div><b>۰</b><span>فرم طولانی</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="lp-sec">
+    <div class="lp-wrap">
+      <div class="cta-band reveal-up">
+        <div><h2>آماده‌ای امروز را ثبت کنی؟</h2><p>وارد شو، یک توکن برای ایجنتت بساز و از همین امروز روندهایت را ببین.</p></div>
+        <div class="cta-actions">
+          <a class="btn btn-lg cta-light" data-cta href="login.html"><span data-cta-label>ورود به داشبورد</span><span data-icon="arrowLeft"></span></a>
+          <a class="btn btn-lg cta-ghost" href="connect.html"><span data-icon="plug"></span>اتصال به ایجنت</a>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</main>
 
-<footer>
-  <div class="wrap">
-    <div class="logo" style="font-size:15px"><span class="dot" style="width:22px;height:22px;font-size:12px">ب</span> بهوش</div>
-    <p>ساخته امیرمهدی — سلامت و مالی، یک جا.</p>
-    <div class="sp">
-      <a class="btn ghost" href="/dashboard.html">داشبورد</a>
-    </div>
+<footer class="lp-foot">
+  <div class="lp-wrap foot-row">
+    <a class="brand" href="index.html"><span class="brand-mark">ب</span><span>بهوش<small>سلامت و مالی، یک‌جا</small></span></a>
+    <nav class="foot-links" aria-label="پیوندها">
+      <a href="dashboard.html">داشبورد سلامت</a><a href="finance.html">داشبورد مالی</a><a href="live.html">دستیار جلسه</a><a href="connect.html">اتصال به ایجنت</a>
+    </nav>
   </div>
 </footer>
 
-<script src="shell.js" defer></script>
+<script src="config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/index.js"></script>
+<script src="shell.js"></script>
 </body>
 </html>

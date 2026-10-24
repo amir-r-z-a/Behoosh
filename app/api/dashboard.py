@@ -1,7 +1,7 @@
 """اندپوینت جامع داشبورد: همه داده لازم برای رندر یکجا."""
 from datetime import date, timedelta
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
@@ -10,7 +10,7 @@ from app.api.auth_deps import (
 )
 from app.core.config import get_settings
 from app.db.models import (
-    BodyMetric, Habit, Meal, MoodLog, Prayer, ScreenTime, SleepLog, Workout,
+    BodyMetric, Habit, Meal, MoodLog, Prayer, ScreenTime, SleepLog, Workout, WorkoutSet,
 )
 from app.db.session import get_db
 
@@ -29,8 +29,58 @@ def _series(db: Session, uid, model, date_col, val_col, start, agg="sum"):
     return {d.isoformat(): float(v or 0) for d, v in rows}
 
 
+def _hm(dt) -> str | None:
+    return dt.strftime("%H:%M") if dt else None
+
+
+def _details(db: Session, uid, today: date) -> dict:
+    """جزئیات جدول‌های داشبورد: وعده‌ها و وضعیت امروز، خواب و ورزش اخیر."""
+    meals = db.execute(select(Meal).where(Meal.user_id == uid, Meal.log_date == today)
+                       .order_by(Meal.created_at)).scalars().all()
+    sleeps = db.execute(select(SleepLog).where(SleepLog.user_id == uid)
+                        .order_by(SleepLog.log_date.desc()).limit(14)).scalars().all()
+    workouts = db.execute(select(Workout).where(Workout.user_id == uid)
+                          .order_by(Workout.log_date.desc(), Workout.created_at.desc())
+                          .limit(10)).scalars().all()
+    sets: dict = {}
+    if workouts:
+        for st in db.execute(select(WorkoutSet).where(
+                WorkoutSet.workout_id.in_([w.id for w in workouts]))).scalars().all():
+            sets.setdefault(st.workout_id, []).append(st)
+    prayers = db.execute(select(Prayer.prayer, Prayer.status).where(
+        Prayer.user_id == uid, Prayer.log_date == today)).all()
+    habit = db.execute(select(Habit).where(Habit.user_id == uid, Habit.log_date == today)
+                       ).scalar_one_or_none()
+    mood = db.execute(select(MoodLog).where(MoodLog.user_id == uid, MoodLog.log_date == today)
+                      ).scalar_one_or_none()
+    return {
+        "today": today.isoformat(),
+        "meals_today": [{"id": str(m.id), "slot": m.slot, "name": m.item_name,
+                         "quantity": float(m.quantity), "unit": m.unit, "kcal": float(m.kcal),
+                         "protein_g": float(m.protein_g), "carbs_g": float(m.carbs_g),
+                         "fat_g": float(m.fat_g)} for m in meals],
+        "sleep_log": [{"d": s.log_date.isoformat(), "bedtime": _hm(s.bedtime),
+                       "wake_time": _hm(s.wake_time), "hours": float(s.main_hours),
+                       "quality": int(s.quality), "wake_count": int(s.wake_count),
+                       "nap_min": int(s.nap_min)} for s in sleeps],
+        "workouts": [{"d": w.log_date.isoformat(), "kind": w.kind,
+                      "duration_min": int(w.duration_min), "kcal": float(w.kcal_burned),
+                      "muscles": list(w.muscles or []), "notes": w.notes,
+                      "sets": [{"exercise": s.exercise, "sets": s.sets, "reps": s.reps,
+                                "weight_kg": float(s.weight_kg)} for s in sets.get(w.id, [])]}
+                     for w in workouts],
+        "prayers_today": {p: s for p, s in prayers},
+        "habit_today": ({"water_liters": float(habit.water_liters),
+                         "breathing_done": bool(habit.breathing_done),
+                         "supplements": habit.supplements or [], "teas": habit.teas or []}
+                        if habit else None),
+        "mood_today": ({"mood": mood.mood, "stress": mood.stress, "energy": mood.energy,
+                        "note": mood.note} if mood else None),
+    }
+
+
 @router.get("/dashboard")
-def dashboard(days: int = 30,
+def dashboard(days: int = Query(30, ge=1, le=365),
               p: Principal = Depends(require_scope(SCOPE_HEALTH_READ)),
               db: Session = Depends(get_db)):
     # قاعده طلایی: هویت فقط از توکن. هیچ‌وقت از دیتابیس خوانده نمی‌شود.
@@ -170,4 +220,5 @@ def dashboard(days: int = 30,
         "temp_cold_warm": temp_cw,
         "temp_dry_wet": temp_dw,
         "temperament": temperament,
+        **_details(db, uid, today),
     }
